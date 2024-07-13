@@ -36,4 +36,4 @@ build/
 src/main/resources/application.yml
 
 ### Files for quick code cases testing ###
-src/main/java/com/luxusxc/mirror_tg_ds/Test.java
+src/main/java/com/luxusxc/rank_up/Test.java
