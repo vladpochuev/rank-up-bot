@@ -9,27 +9,38 @@ import java.util.List;
 @Service
 public class Images {
     private final ImageRepository imageRepository;
+    private final StringSplitter stringSplitter;
+    private final StringJoiner stringJoiner;
+    private static final String SEPARATOR = "\n";
 
-    public Images(RankUpConfig config) {
+    public Images(RankUpConfig config, StringSplitter stringSplitter, StringJoiner stringJoiner) {
         imageRepository = config.getImageRepository();
+        this.stringSplitter = stringSplitter;
+        this.stringJoiner = stringJoiner;
     }
 
     public void importImages(String imagesUrl) {
-        String[] imageUrlSplit = imagesUrl.split("\n");
         imageRepository.deleteAll();
-        for (String imageUrl : imageUrlSplit) {
-            ImageEntity imageEntity = new ImageEntity(imageUrl);
-            imageRepository.save(imageEntity);
-        }
+        List<String> urls = stringSplitter.split(imagesUrl, SEPARATOR);
+        List<ImageEntity> images = getImagesFromUrls(urls);
+        saveImages(images);
+    }
+
+    private List<ImageEntity> getImagesFromUrls(List<String> urls) {
+        return urls.stream().map(ImageEntity::new).toList();
+    }
+
+    private void saveImages(List<ImageEntity> images) {
+        imageRepository.saveAll(images);
     }
 
     public String exportImages() {
-        StringBuilder builder = new StringBuilder();
-        Iterable<ImageEntity> imageEntities = imageRepository.findAll();
-        for (ImageEntity imageEntity : imageEntities) {
-            builder.append(imageEntity.getImageUrl()).append("\n");
-        }
-        String result = builder.toString();
-        return result.substring(0, result.length() - 2);
+        List<ImageEntity> images = (List<ImageEntity>) imageRepository.findAll();
+        List<String> urls = getUrlsFromImages(images);
+        return stringJoiner.join(urls, SEPARATOR);
+    }
+
+    private List<String> getUrlsFromImages(List<ImageEntity> images) {
+        return images.stream().map(ImageEntity::getImageUrl).toList();
     }
 }

@@ -6,7 +6,6 @@ import com.luxusxc.rank_up.repository.DefaultRankRepository;
 import com.luxusxc.rank_up.repository.RankRepository;
 import org.springframework.stereotype.Service;
 
-import java.util.Arrays;
 import java.util.List;
 
 @Service
@@ -14,44 +13,65 @@ public class Levels {
     private final RankRepository repository;
     private final DefaultRankRepository defaultRepository;
     private final RankUpConfig config;
+    private final StringSplitter stringSplitter;
+    private final StringJoiner stringJoiner;
+    private static final String SEPARATOR = ", ";
 
-    public Levels(DefaultRankRepository defaultRepository, RankRepository repository, RankUpConfig config) {
+    public Levels(DefaultRankRepository defaultRepository, RankRepository repository, RankUpConfig config, StringSplitter stringSplitter, StringJoiner stringJoiner) {
         this.defaultRepository = defaultRepository;
         this.repository = repository;
         this.config = config;
+        this.stringSplitter = stringSplitter;
+        this.stringJoiner = stringJoiner;
     }
 
     public void importLevels(boolean enableCustom, String customLevels) {
         if (enableCustom) {
-            config.setEnableCustomLevels(true);
-            String[] levelsSplit = customLevels.split(", ");
-            long[] levels = Arrays.stream(levelsSplit).mapToLong(Long::parseLong).toArray();
-            List<RankEntity> ranks = (List<RankEntity>) repository.findAll();
-            for (int i = 0; i < ranks.size(); i++) {
-                RankEntity rank = ranks.get(i);
-                rank.setExperience(levels[i]);
-                repository.save(rank);
-            }
+            setCustomLevels(customLevels);
         } else {
-            config.setEnableCustomLevels(false);
-            List<RankEntity> ranks = (List<RankEntity>) repository.findAll();
-            List<DefaultRankEntity> defaultRanks = (List<DefaultRankEntity>) defaultRepository.findAll();
-            for (int i = 0; i < ranks.size(); i++) {
-                RankEntity rank = ranks.get(i);
-                DefaultRankEntity defaultRank = defaultRanks.get(i);
-                rank.setExperience(defaultRank.getExperience());
-                repository.save(rank);
-            }
+            setDefaultLevels();
+        }
+    }
+
+    private void setCustomLevels(String customLevels) {
+        config.setEnableCustomLevels(true);
+        List<Long> levels = getLevelsFromString(customLevels);
+        setLevels(levels);
+    }
+
+    private List<Long> getLevelsFromString(String levels) {
+        List<String> levelsStr = stringSplitter.split(levels, SEPARATOR);
+        return levelsStr.stream().mapToLong(Long::parseLong).boxed().toList();
+    }
+
+    private void setDefaultLevels() {
+        config.setEnableCustomLevels(false);
+        List<Long> levels = getDefaultLevels();
+        setLevels(levels);
+    }
+
+    private List<Long> getDefaultLevels() {
+        List<DefaultRankEntity> defaultRanks = (List<DefaultRankEntity>) defaultRepository.findAll();
+        return defaultRanks.stream().map(DefaultRankEntity::getExperience).toList();
+    }
+
+    private void setLevels(List<Long> levels) {
+        List<RankEntity> ranks = (List<RankEntity>) repository.findAll();
+        for (int i = 0; i < ranks.size(); i++) {
+            RankEntity rank = ranks.get(i);
+            rank.setExperience(levels.get(i));
+            rank.setLevel(i + 1);
+            repository.save(rank);
         }
     }
 
     public String exportLevels() {
-        StringBuilder builder = new StringBuilder();
-        Iterable<RankEntity> ranks = config.getRankRepository().findAll();
-        for (RankEntity rank : ranks) {
-            builder.append(rank.getExperience()).append(", ");
-        }
-        String result = builder.toString();
-        return result.substring(0, result.length() - 2);
+        List<RankEntity> ranks = (List<RankEntity>) repository.findAll();
+        List<String> expStrings = getExpFromRanks(ranks);
+        return stringJoiner.join(expStrings, SEPARATOR);
+    }
+
+    private List<String> getExpFromRanks(List<RankEntity> ranks) {
+        return ranks.stream().map(RankEntity::getExperience).map(String::valueOf).toList();
     }
 }

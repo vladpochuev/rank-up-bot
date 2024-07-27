@@ -4,46 +4,74 @@ import com.luxusxc.rank_up.model.DefaultRankEntity;
 import com.luxusxc.rank_up.model.RankEntity;
 import com.luxusxc.rank_up.repository.DefaultRankRepository;
 import com.luxusxc.rank_up.repository.RankRepository;
+import org.glassfish.hk2.api.Rank;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 public class Ranks {
     private final RankRepository repository;
     private final DefaultRankRepository defaultRepository;
     private final RankUpConfig config;
+    private final StringSplitter stringSplitter;
+    private final StringJoiner stringJoiner;
+    private static final String SEPARATOR = ", ";
 
-    public Ranks(DefaultRankRepository defaultRepository, RankRepository repository, RankUpConfig config) {
+    public Ranks(DefaultRankRepository defaultRepository, RankRepository repository, RankUpConfig config, StringSplitter stringSplitter, StringJoiner stringJoiner) {
         this.defaultRepository = defaultRepository;
         this.repository = repository;
         this.config = config;
+        this.stringSplitter = stringSplitter;
+        this.stringJoiner = stringJoiner;
     }
 
     public void importRanks(boolean enableCustom, String customRanks) {
         if (enableCustom) {
-            config.setEnableCustomRanks(true);
-            String[] ranks = customRanks.split(", ");
-            repository.deleteAll();
-            for (String rank : ranks) {
-                RankEntity entity = new RankEntity(rank);
-                repository.save(entity);
-            }
+            setCustomRanks(customRanks);
         } else {
-            config.setEnableCustomRanks(false);
-            repository.deleteAll();
-            Iterable<DefaultRankEntity> ranks = defaultRepository.findAll();
-            for (DefaultRankEntity rank : ranks) {
-                repository.save(new RankEntity(rank.getRank()));
-            }
+            setDefaultRanks();
         }
     }
 
+    private void setCustomRanks(String customRanks) {
+        config.setEnableCustomRanks(true);
+        List<RankEntity> ranks = getRanksFromString(customRanks);
+        setRanks(ranks);
+    }
+
+    private List<RankEntity> getRanksFromString(String ranks) {
+        List<String> rankNames = stringSplitter.split(ranks, SEPARATOR);
+        return rankNames.stream().map(RankEntity::new).toList();
+    }
+
+    private void setDefaultRanks() {
+        config.setEnableCustomRanks(false);
+        List<DefaultRankEntity> defaultRanks = getDefaultRanks();
+        List<RankEntity> ranks = mapDefaultRanksToRegular(defaultRanks);
+        setRanks(ranks);
+    }
+
+    private List<DefaultRankEntity> getDefaultRanks() {
+        return (List<DefaultRankEntity>) defaultRepository.findAll();
+    }
+
+    private List<RankEntity> mapDefaultRanksToRegular(List<DefaultRankEntity> defaultRanks) {
+        return defaultRanks.stream().map(DefaultRankEntity::getRank).map(RankEntity::new).toList();
+    }
+
+    private void setRanks(List<RankEntity> ranks) {
+        repository.deleteAll();
+        repository.saveAll(ranks);
+    }
+
     public String exportRanks() {
-        StringBuilder builder = new StringBuilder();
-        Iterable<RankEntity> configEntities = config.getRankRepository().findAll();
-        for (RankEntity configEntity : configEntities) {
-            builder.append(configEntity.getRank()).append(", ");
-        }
-        String result = builder.toString();
-        return result.substring(0, result.length() - 2);
+        List<RankEntity> ranks = (List<RankEntity>) repository.findAll();
+        List<String> rankNames = getRankNames(ranks);
+        return stringJoiner.join(rankNames, SEPARATOR);
+    }
+
+    private List<String> getRankNames(List<RankEntity> ranks) {
+        return ranks.stream().map(RankEntity::getRank).toList();
     }
 }
