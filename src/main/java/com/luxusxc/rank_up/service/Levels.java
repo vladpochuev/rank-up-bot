@@ -60,7 +60,6 @@ public class Levels {
         for (int i = 0; i < ranks.size(); i++) {
             RankEntity rank = ranks.get(i);
             rank.setExperience(levels.get(i));
-            rank.setLevel(i + 1);
             repository.save(rank);
         }
     }

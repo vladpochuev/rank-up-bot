@@ -12,6 +12,6 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class DefaultRankEntity {
     @Id
-    private String rank;
+    private Rank rank;
     private Long experience;
 }

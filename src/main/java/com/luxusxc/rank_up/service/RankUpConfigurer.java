@@ -1,6 +1,7 @@
 package com.luxusxc.rank_up.service;
 
 import com.luxusxc.rank_up.model.WebRankUpConfig;
+import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.io.FileNotFoundException;
@@ -9,20 +10,13 @@ import java.io.IOException;
 import java.io.ObjectOutputStream;
 
 @Service
+@AllArgsConstructor
 public class RankUpConfigurer {
     private final Levels levels;
     private final Ranks ranks;
     private final Images images;
     private final LevelUpMessages levelUpMessages;
     private final RankUpConfig config;
-
-    public RankUpConfigurer(Levels levels, Ranks ranks, Images images, LevelUpMessages levelUpMessages, RankUpConfig config) {
-        this.levels = levels;
-        this.ranks = ranks;
-        this.images = images;
-        this.levelUpMessages = levelUpMessages;
-        this.config = config;
-    }
 
     public void importConfig(WebRankUpConfig webConfig) {
         ranks.importRanks(webConfig.isEnableCustomRanks(), webConfig.getCustomRanks());

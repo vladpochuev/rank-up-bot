@@ -1,13 +1,14 @@
 package com.luxusxc.rank_up.service;
 
 import com.luxusxc.rank_up.model.DefaultRankEntity;
+import com.luxusxc.rank_up.model.Rank;
 import com.luxusxc.rank_up.model.RankEntity;
 import com.luxusxc.rank_up.repository.DefaultRankRepository;
 import com.luxusxc.rank_up.repository.RankRepository;
-import org.glassfish.hk2.api.Rank;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 
 @Service
 public class Ranks {
@@ -16,7 +17,7 @@ public class Ranks {
     private final RankUpConfig config;
     private final StringSplitter stringSplitter;
     private final StringJoiner stringJoiner;
-    private static final String SEPARATOR = ", ";
+    private static final String SEPARATOR = "\n";
 
     public Ranks(DefaultRankRepository defaultRepository, RankRepository repository, RankUpConfig config, StringSplitter stringSplitter, StringJoiner stringJoiner) {
         this.defaultRepository = defaultRepository;
@@ -41,8 +42,9 @@ public class Ranks {
     }
 
     private List<RankEntity> getRanksFromString(String ranks) {
+        AtomicInteger i = new AtomicInteger(1);
         List<String> rankNames = stringSplitter.split(ranks, SEPARATOR);
-        return rankNames.stream().map(RankEntity::new).toList();
+        return rankNames.stream().map(a -> new Rank(a, i.getAndIncrement())).map(RankEntity::new).toList();
     }
 
     private void setDefaultRanks() {
@@ -72,6 +74,6 @@ public class Ranks {
     }
 
     private List<String> getRankNames(List<RankEntity> ranks) {
-        return ranks.stream().map(RankEntity::getRank).toList();
+        return ranks.stream().map(RankEntity::getRank).map(Rank::getRankName).toList();
     }
 }

@@ -20,28 +20,28 @@
 
     <div id="levels" class="inner_block">
         <div class="check">
-            <input type="checkbox" th:checked="${webConfig.enableCustomLevels}" th:field="*{enableCustomLevels}">
+            <input class="levels" type="checkbox" th:checked="${webConfig.enableCustomLevels}" th:field="*{enableCustomLevels}">
             <span class="check_title">Enable custom levels</span>
         </div>
 
         <div class="text_block">
             <label class="title" for="levels_textarea">Custom levels</label>
-            <textarea id="levels_textarea" th:field="*{customLevels}"></textarea>
+            <textarea class="levels" id="levels_textarea" th:field="*{customLevels}" th:disabled="${!webConfig.enableCustomLevels}"></textarea>
             <div class="tip">Enter numbers separated by a comma. Each number is how many XP do you need for the next level.</div>
         </div>
     </div>
 
     <div id="ranks" class="inner_block">
         <div class="check">
-            <input type="checkbox" th:checked="${webConfig.enableCustomRanks}" th:field="*{enableCustomRanks}">
+            <input class="ranks" type="checkbox" th:checked="${webConfig.enableCustomRanks}" th:field="*{enableCustomRanks}">
             <span class="check_title">Enable custom ranks</span>
         </div>
 
         <div class="text_block">
             <label class="title" for="ranks_textarea">Ranks</label>
-            <textarea id="ranks_textarea" th:field="*{customRanks}"></textarea>
+            <textarea class="ranks" id="ranks_textarea" th:field="*{customRanks}" th:disabled="${!webConfig.enableCustomRanks}"></textarea>
             <div class="tip">Enter ranks separated by a line break. From the lowest rank to the highest one. Each line is a
-                new level, the line is level 1.
+                new level, the first line is level 1.
             </div>
         </div>
     </div>
@@ -69,6 +69,8 @@
 
     <button type="submit">Save</button>
 </form>
+
+<script th:src="@{/js/config.js}"></script>
 
 </body>
 </html>

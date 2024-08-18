@@ -1,5 +1,6 @@
 package com.luxusxc.rank_up.model;
 
+import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
@@ -13,12 +14,11 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class RankEntity {
     @Id
-    private String rank;
-    private Integer level;
+    private Rank rank;
     private Long experience;
     private String levelUpMessage;
 
-    public RankEntity(String rank) {
+    public RankEntity(Rank rank) {
         this.rank = rank;
     }
 }
