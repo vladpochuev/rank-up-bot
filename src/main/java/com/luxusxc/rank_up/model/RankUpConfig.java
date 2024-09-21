@@ -1,14 +1,18 @@
-package com.luxusxc.rank_up.service;
+package com.luxusxc.rank_up.model;
 
 import com.luxusxc.rank_up.repository.ImageRepository;
 import com.luxusxc.rank_up.repository.RankRepository;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.springframework.stereotype.Component;
 
 import java.io.Serial;
 import java.io.Serializable;
 
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class RankUpConfig implements Serializable {
     @Serial
     private static final long serialVersionUID = 1L;
@@ -18,11 +22,4 @@ public class RankUpConfig implements Serializable {
     private boolean enableCustomLevels;
     private boolean announceLevelUp;
     private String levelUpMessageFormat;
-    private transient RankRepository rankRepository;
-    private transient ImageRepository imageRepository;
-
-    public RankUpConfig(RankRepository rankRepository, ImageRepository imageRepository) {
-        this.rankRepository = rankRepository;
-        this.imageRepository = imageRepository;
-    }
 }

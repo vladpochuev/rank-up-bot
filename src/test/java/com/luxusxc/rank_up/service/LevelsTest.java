@@ -1,0 +1,147 @@
+package com.luxusxc.rank_up.service;
+
+import com.luxusxc.rank_up.model.DefaultRankEntity;
+import com.luxusxc.rank_up.model.Rank;
+import com.luxusxc.rank_up.model.RankEntity;
+import com.luxusxc.rank_up.model.WebRankUpConfig;
+import com.luxusxc.rank_up.repository.DefaultRankRepository;
+import com.luxusxc.rank_up.repository.RankRepository;
+import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentCaptor;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.equalTo;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.*;
+
+public class LevelsTest {
+    private final Levels levels;
+    private final RankRepository repository;
+    private final DefaultRankRepository defaultRepository;
+
+    public LevelsTest() {
+        repository = mock();
+        defaultRepository = mock();
+        this.levels = new Levels(repository, defaultRepository, new StringSplitter(), new StringJoiner());
+    }
+
+    @Test
+    void testExportLevel() {
+        List<RankEntity> rankEntities = new ArrayList<>();
+        Rank rank = new Rank();
+        String levelUpMessage = "name: {name}";
+        rankEntities.add(new RankEntity(rank, 10L, levelUpMessage));
+
+        when(repository.findAll()).thenReturn(rankEntities);
+        assertThat(levels.exportLevels(), equalTo("10"));
+    }
+
+    @Test
+    void testExportLevels() {
+        List<RankEntity> rankEntities = new ArrayList<>();
+        Rank rank = new Rank();
+        String levelUpMessage = "name: {name}";
+        rankEntities.add(new RankEntity(rank, 10L, levelUpMessage));
+        rankEntities.add(new RankEntity(rank, 20L, levelUpMessage));
+        rankEntities.add(new RankEntity(rank, 30L, levelUpMessage));
+
+        when(repository.findAll()).thenReturn(rankEntities);
+        assertThat(levels.exportLevels(), equalTo("10, 20, 30"));
+    }
+
+    @Test
+    void testExportLevelsEmpty() {
+        List<RankEntity> rankEntities = new ArrayList<>();
+        when(repository.findAll()).thenReturn(rankEntities);
+        assertThat(levels.exportLevels(), equalTo(""));
+    }
+
+    @Test
+    void testExportLevelsNull() {
+        List<RankEntity> rankEntities = new ArrayList<>();
+        rankEntities.add(null);
+        when(repository.findAll()).thenReturn(rankEntities);
+        assertThrows(NullPointerException.class, levels::exportLevels);
+    }
+
+    @Test
+    void testExportLevelsNullField() {
+        List<RankEntity> rankEntities = new ArrayList<>();
+        rankEntities.add(new RankEntity(new Rank(), null, "name: {name}"));
+        when(repository.findAll()).thenReturn(rankEntities);
+        assertThrows(NullPointerException.class, levels::exportLevels);
+    }
+
+    @Test
+    void testImportLevelsCustom() {
+        RankEntity rankEntity = new RankEntity(null, 10L, null);
+        when(repository.findAll()).thenReturn(List.of(rankEntity));
+
+        WebRankUpConfig webConfig = new WebRankUpConfig();
+        webConfig.setEnableCustomLevels(true);
+        webConfig.setCustomLevels("20");
+        levels.importLevels(webConfig);
+
+        ArgumentCaptor<List<RankEntity>> captor = ArgumentCaptor.forClass(List.class);
+        verify(repository).saveAll(captor.capture());
+
+        RankEntity capturedRankEntity = captor.getValue().get(0);
+        assertThat(capturedRankEntity.getExperience(), equalTo(20L));
+    }
+
+    @Test
+    void testImportLevelsDefault() {
+        DefaultRankEntity defaultRankEntity = new DefaultRankEntity(null, 10L);
+        when(repository.findAll()).thenReturn(List.of(new RankEntity(null, null, null)));
+        when(defaultRepository.findAll()).thenReturn(List.of(defaultRankEntity));
+
+        WebRankUpConfig webConfig = new WebRankUpConfig();
+        webConfig.setEnableCustomLevels(false);
+        webConfig.setCustomLevels("20");
+        levels.importLevels(webConfig);
+
+        ArgumentCaptor<List<RankEntity>> captor = ArgumentCaptor.forClass(List.class);
+        verify(repository).saveAll(captor.capture());
+
+        RankEntity capturedRankEntity = captor.getValue().get(0);
+        assertThat(capturedRankEntity.getExperience(), equalTo(defaultRankEntity.getExperience()));
+    }
+
+    @Test
+    void testImportLevelsIllegalArgument() {
+        RankEntity rankEntity = new RankEntity(null, 10L, null);
+        when(repository.findAll()).thenReturn(List.of(rankEntity));
+
+        WebRankUpConfig webConfig = new WebRankUpConfig();
+        webConfig.setEnableCustomLevels(true);
+        webConfig.setCustomLevels("test");
+        assertThrows(IllegalArgumentException.class, () -> levels.importLevels(webConfig));
+    }
+
+    @Test
+    void testImportLevelsNull() {
+        assertThrows(NullPointerException.class, () -> levels.importLevels(null));
+    }
+
+    @Test
+    void testImportLevelsNullField() {
+        WebRankUpConfig webConfig = new WebRankUpConfig();
+        webConfig.setCustomLevels(null);
+        webConfig.setEnableCustomLevels(true);
+        assertThrows(IllegalArgumentException.class, () -> levels.importLevels(webConfig));
+    }
+
+    @Test
+    void testImportLevelsEmpty() {
+        RankEntity rankEntity = new RankEntity(null, 10L, null);
+        when(repository.findAll()).thenReturn(List.of(rankEntity));
+
+        WebRankUpConfig webConfig = new WebRankUpConfig();
+        webConfig.setEnableCustomLevels(true);
+        webConfig.setCustomLevels("");
+        assertThrows(IllegalArgumentException.class, () -> levels.importLevels(webConfig));
+    }
+}

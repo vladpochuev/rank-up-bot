@@ -1,6 +1,7 @@
 package com.luxusxc.rank_up.service;
 
 import com.luxusxc.rank_up.model.ImageEntity;
+import com.luxusxc.rank_up.model.WebRankUpConfig;
 import com.luxusxc.rank_up.repository.ImageRepository;
 import org.springframework.stereotype.Service;
 
@@ -11,18 +12,19 @@ public class Images {
     private final ImageRepository imageRepository;
     private final StringSplitter stringSplitter;
     private final StringJoiner stringJoiner;
-    private static final String SEPARATOR = "\n";
+    private static final String DELIMITER = "\n";
 
-    public Images(RankUpConfig config, StringSplitter stringSplitter, StringJoiner stringJoiner) {
-        imageRepository = config.getImageRepository();
+    public Images(ImageRepository imageRepository, StringSplitter stringSplitter, StringJoiner stringJoiner) {
+        this.imageRepository = imageRepository;
         this.stringSplitter = stringSplitter;
         this.stringJoiner = stringJoiner;
     }
 
-    public void importImages(String imagesUrl) {
-        imageRepository.deleteAll();
-        List<String> urls = stringSplitter.split(imagesUrl, SEPARATOR);
+    public void importImages(WebRankUpConfig webConfig) {
+        String imagesUrl = webConfig.getAttachedImagesUrl();
+        List<String> urls = stringSplitter.split(imagesUrl, DELIMITER);
         List<ImageEntity> images = getImagesFromUrls(urls);
+        imageRepository.deleteAll();
         saveImages(images);
     }
 
@@ -37,10 +39,14 @@ public class Images {
     public String exportImages() {
         List<ImageEntity> images = (List<ImageEntity>) imageRepository.findAll();
         List<String> urls = getUrlsFromImages(images);
-        return stringJoiner.join(urls, SEPARATOR);
+        return stringJoiner.join(urls, DELIMITER);
     }
 
     private List<String> getUrlsFromImages(List<ImageEntity> images) {
-        return images.stream().map(ImageEntity::getImageUrl).toList();
+        List<String> urls = images.stream().map(ImageEntity::getImageUrl).toList();
+        if (urls.contains(null)) {
+            throw new NullPointerException();
+        }
+        return urls;
     }
 }

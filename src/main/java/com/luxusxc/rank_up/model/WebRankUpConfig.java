@@ -16,4 +16,14 @@ public class WebRankUpConfig {
     private boolean announceLevelUp;
     private String levelUpMessage;
     private String attachedImagesUrl;
+
+    public static WebRankUpConfig createFrom(RankUpConfig config) {
+        WebRankUpConfig webConfig = new WebRankUpConfig();
+        webConfig.setEnableAll(config.isEnableAll());
+        webConfig.setEnableCustomRanks(config.isEnableCustomRanks());
+        webConfig.setEnableCustomLevels(config.isEnableCustomLevels());
+        webConfig.setAnnounceLevelUp(config.isAnnounceLevelUp());
+        webConfig.setLevelUpMessage(config.getLevelUpMessageFormat());
+        return webConfig;
+    }
 }

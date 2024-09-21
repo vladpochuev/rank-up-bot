@@ -1,6 +1,6 @@
 package com.luxusxc.rank_up.telegram;
 
-import com.luxusxc.rank_up.service.Utils;
+import com.luxusxc.rank_up.service.CommandParser;
 import com.luxusxc.rank_up.telegram.callbacks.Callback;
 import com.luxusxc.rank_up.telegram.callbacks.CallbackFactory;
 import com.luxusxc.rank_up.telegram.callbacks.CallbackType;
@@ -31,10 +31,12 @@ import java.util.List;
 @Service
 public class TelegramBot extends TelegramLongPollingBot {
     private final BotConfig config;
+    private final CommandParser commandParser;
 
-    public TelegramBot(BotConfig config) {
+    public TelegramBot(BotConfig config, CommandParser commandParser) {
         super(config.getToken());
         this.config = config;
+        this.commandParser = commandParser;
         addListOfCommands();
     }
 
@@ -70,7 +72,7 @@ public class TelegramBot extends TelegramLongPollingBot {
 
     private Command defineCommand(String messageText) {
         CommandFactory commandFactory = new CommandFactory(this);
-        String commandBody = Utils.getCommandBody(messageText);
+        String commandBody = commandParser.getCommandBody(messageText);
         CommandType commandType = CommandType.getInstance(commandBody);
         return commandFactory.getCommand(commandType);
     }

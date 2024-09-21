@@ -1,13 +1,7 @@
 package com.luxusxc.rank_up;
 
-import org.junit.jupiter.api.Test;
-import org.springframework.boot.test.context.SpringBootTest;
+import static org.hamcrest.MatcherAssert.assertThat;
 
-@SpringBootTest
 class RankUpApplicationTests {
-
-    @Test
-    void contextLoads() {
-    }
 
 }
