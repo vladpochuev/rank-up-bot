@@ -5,7 +5,6 @@ import com.luxusxc.rank_up.model.RankEntity;
 import com.luxusxc.rank_up.model.WebRankUpConfig;
 import com.luxusxc.rank_up.repository.RankRepository;
 import org.junit.jupiter.api.Test;
-import org.mockito.ArgumentCaptor;
 
 import java.util.List;
 
@@ -20,44 +19,41 @@ public class LevelUpMessagesTest {
 
     public LevelUpMessagesTest() {
         repository = mock();
-        messages = new LevelUpMessages(repository, new VariableReplacer());
+        messages = new LevelUpMessages(new VariableReplacer());
     }
 
     @Test
     void testImportMessage() {
         RankEntity entity = new RankEntity(new Rank("TEST", 1), null, null);
-        when(repository.findAll()).thenReturn(List.of(entity));
 
         WebRankUpConfig webConfig = new WebRankUpConfig();
         webConfig.setLevelUpMessage("{newrank}, {newlvl}");
-        messages.importMessage(webConfig);
+        messages.fillMessage(webConfig, List.of(entity));
 
-        ArgumentCaptor<List<RankEntity>> captor = ArgumentCaptor.forClass(List.class);
-        verify(repository).saveAll(captor.capture());
-
-        RankEntity capturedRankEntity = captor.getValue().get(0);
-        assertThat(capturedRankEntity.getLevelUpMessage(), equalTo("TEST, 1"));
+        assertThat(entity.getLevelUpMessage(), equalTo("TEST, 1"));
     }
 
     @Test
     void testImportMessageNull() {
-        assertThrows(NullPointerException.class, () -> messages.importMessage(null));
+        RankEntity rankEntity = new RankEntity(null, 10L, "{newrank}");
+        assertThrows(NullPointerException.class, () -> messages.fillMessage(null, List.of(rankEntity)));
     }
 
     @Test
     void testImportMessageNullField() {
+        RankEntity rankEntity = new RankEntity(null, 10L, "{newrank}");
+
         WebRankUpConfig webConfig = new WebRankUpConfig();
         webConfig.setLevelUpMessage(null);
-        assertThrows(IllegalArgumentException.class, () -> messages.importMessage(webConfig));
+        assertThrows(IllegalArgumentException.class, () -> messages.fillMessage(webConfig, List.of(rankEntity)));
     }
 
     @Test
     void testImportLevelsEmpty() {
         RankEntity rankEntity = new RankEntity(null, 10L, "{newrank}");
-        when(repository.findAll()).thenReturn(List.of(rankEntity));
 
         WebRankUpConfig webConfig = new WebRankUpConfig();
         webConfig.setLevelUpMessage("");
-        assertThrows(IllegalArgumentException.class, () -> messages.importMessage(webConfig));
+        assertThrows(IllegalArgumentException.class, () -> messages.fillMessage(webConfig, List.of(rankEntity)));
     }
 }

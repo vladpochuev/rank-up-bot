@@ -19,17 +19,19 @@ public class Levels {
     private final StringJoiner stringJoiner;
     private static final String DELIMITER = ", ";
 
-    public void importLevels(WebRankUpConfig webConfig) {
+    public void fillLevels(WebRankUpConfig webConfig, List<RankEntity> rankEntities) {
         if (webConfig.isEnableCustomLevels()) {
-            setCustomLevels(webConfig.getCustomLevels());
+            fillWithCustomLevels(rankEntities, webConfig.getCustomLevels());
         } else {
-            setDefaultLevels();
+            fillFromDefaultLevels(rankEntities);
         }
     }
 
-    private void setCustomLevels(String customLevels) {
-        List<Long> levels = getLevelsFromString(customLevels);
-        setLevels(levels);
+    private void fillWithCustomLevels(List<RankEntity> rankEntities, String levelsStr) {
+        List<Long> levels = getLevelsFromString(levelsStr);
+        for (int i = 0; i < rankEntities.size(); i++) {
+            rankEntities.get(i).setExperience(levels.get(i));
+        }
     }
 
     private List<Long> getLevelsFromString(String levels) {
@@ -38,23 +40,16 @@ public class Levels {
         return levelsStr.stream().mapToLong(Long::parseLong).boxed().toList();
     }
 
-    private void setDefaultLevels() {
-        List<Long> levels = getDefaultLevels();
-        setLevels(levels);
+    private void fillFromDefaultLevels(List<RankEntity> rankEntities) {
+        List<Long> defaultLevels = getDefaultLevels();
+        for (int i = 0; i < rankEntities.size(); i++) {
+            rankEntities.get(i).setExperience(defaultLevels.get(i));
+        }
     }
 
     private List<Long> getDefaultLevels() {
         List<DefaultRankEntity> defaultRanks = (List<DefaultRankEntity>) defaultRepository.findAll();
         return defaultRanks.stream().map(DefaultRankEntity::getExperience).toList();
-    }
-
-    private void setLevels(List<Long> levels) {
-        List<RankEntity> ranks = (List<RankEntity>) repository.findAll();
-        for (int i = 0; i < ranks.size(); i++) {
-            RankEntity rank = ranks.get(i);
-            rank.setExperience(levels.get(i));
-        }
-        repository.saveAll(ranks);
     }
 
     public String exportLevels() {

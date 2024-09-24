@@ -7,7 +7,6 @@ import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.concurrent.atomic.AtomicInteger;
 
 @Service
 @AllArgsConstructor
@@ -16,50 +15,35 @@ public class Ranks {
     private final DefaultRankRepository defaultRepository;
     private final StringSplitter stringSplitter;
     private final StringJoiner stringJoiner;
+    private final RankEntityFactory rankFactory;
     private static final String DELIMITER = "\n";
 
-    public void importRanks(WebRankUpConfig webConfig) {
+    public void fillRanks(WebRankUpConfig webConfig, List<RankEntity> rankEntities) {
         if (webConfig.isEnableCustomRanks()) {
-            setCustomRanks(webConfig.getCustomRanks());
+            fillWithCustomRanks(rankEntities, webConfig.getCustomRanks());
         } else {
-            setDefaultRanks();
+            fillFromDefaultRanks(rankEntities);
         }
     }
 
-    private void setCustomRanks(String customRanks) {
-        List<RankEntity> ranks = getRanksFromString(customRanks);
-        setRanks(ranks);
-    }
-
-    private List<RankEntity> getRanksFromString(String ranks) {
-        AtomicInteger i = new AtomicInteger(1);
+    private void fillWithCustomRanks(List<RankEntity> rankEntities, String ranks) {
         List<String> rankNames = stringSplitter.split(ranks, DELIMITER);
         if (rankNames.equals(List.of())) throw new IllegalArgumentException();
-        return rankNames.stream().map(a -> new Rank(a, i.getAndIncrement())).map(RankEntity::new).toList();
-    }
-
-    private void setDefaultRanks() {
-        List<DefaultRankEntity> defaultRanks = getDefaultRanks();
-        List<RankEntity> ranks = mapDefaultRanksToRegular(defaultRanks);
-        setRanks(ranks);
-    }
-
-    private List<DefaultRankEntity> getDefaultRanks() {
-        return (List<DefaultRankEntity>) defaultRepository.findAll();
-    }
-
-    private List<RankEntity> mapDefaultRanksToRegular(List<DefaultRankEntity> defaultRanks) {
-        return defaultRanks.stream().map(DefaultRankEntity::getRank).map(RankEntity::new).toList();
-    }
-
-    private void setRanks(List<RankEntity> ranks) {
-        for (RankEntity rankEntity : ranks) {
-            if (rankEntity.getRank().getRankName().equals("")) {
-                throw new IllegalArgumentException();
-            }
+        for (int i = 0; i < rankEntities.size(); i++) {
+            rankEntities.get(i).setRank(new Rank(rankNames.get(i), i + 1));
         }
-        repository.deleteAll();
-        repository.saveAll(ranks);
+    }
+
+    private void fillFromDefaultRanks(List<RankEntity> rankEntities) {
+        List<RankEntity> defaultRankEntities = getRankEntitiesFromDefault();
+        for (int i = 0; i < rankEntities.size(); i++) {
+            rankEntities.get(i).setRank(defaultRankEntities.get(i).getRank());
+        }
+    }
+
+    private List<RankEntity> getRankEntitiesFromDefault() {
+        List<DefaultRankEntity> defaultRanks = (List<DefaultRankEntity>) defaultRepository.findAll();
+        return rankFactory.mapDefaultRanksToRegular(defaultRanks);
     }
 
     public String exportRanks() {

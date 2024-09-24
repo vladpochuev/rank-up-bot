@@ -7,7 +7,6 @@ import com.luxusxc.rank_up.model.WebRankUpConfig;
 import com.luxusxc.rank_up.repository.DefaultRankRepository;
 import com.luxusxc.rank_up.repository.RankRepository;
 import org.junit.jupiter.api.Test;
-import org.mockito.ArgumentCaptor;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -25,7 +24,7 @@ public class RanksTest {
     public RanksTest() {
         repository = mock();
         defaultRepository = mock();
-        this.ranks = new Ranks(repository, defaultRepository, new StringSplitter(), new StringJoiner());
+        this.ranks = new Ranks(repository, defaultRepository, new StringSplitter(), new StringJoiner(), new RankEntityFactory());
     }
 
     @Test
@@ -84,59 +83,52 @@ public class RanksTest {
     @Test
     void testImportRanksCustom() {
         RankEntity rankEntity = new RankEntity(new Rank("OLD", 1), null, null);
-        when(repository.findAll()).thenReturn(List.of(rankEntity));
 
         WebRankUpConfig webConfig = new WebRankUpConfig();
         webConfig.setEnableCustomRanks(true);
         webConfig.setCustomRanks("NEW");
-        ranks.importRanks(webConfig);
+        ranks.fillRanks(webConfig, List.of(rankEntity));
 
-        ArgumentCaptor<List<RankEntity>> captor = ArgumentCaptor.forClass(List.class);
-        verify(repository).saveAll(captor.capture());
-
-        List<RankEntity> capturedRankEntity = captor.getValue();
-        assertThat(capturedRankEntity.get(0).getRank(), equalTo(new Rank("NEW", 1)));
+        assertThat(rankEntity.getRank(), equalTo(new Rank("NEW", 1)));
     }
 
     @Test
     void testImportRanksDefault() {
+        RankEntity rankEntity = new RankEntity(null, null, null);
         DefaultRankEntity defaultRankEntity = new DefaultRankEntity(new Rank("OLD", 1), null);
-        when(repository.findAll()).thenReturn(List.of(new RankEntity(null, null, null)));
         when(defaultRepository.findAll()).thenReturn(List.of(defaultRankEntity));
 
         WebRankUpConfig webConfig = new WebRankUpConfig();
         webConfig.setEnableCustomLevels(false);
         webConfig.setCustomRanks("NEW");
-        ranks.importRanks(webConfig);
+        ranks.fillRanks(webConfig, List.of(rankEntity));
 
-        ArgumentCaptor<List<RankEntity>> captor = ArgumentCaptor.forClass(List.class);
-        verify(repository).saveAll(captor.capture());
-
-        RankEntity capturedRankEntity = captor.getValue().get(0);
-        assertThat(capturedRankEntity.getRank(), equalTo(defaultRankEntity.getRank()));
+        assertThat(rankEntity.getRank(), equalTo(defaultRankEntity.getRank()));
     }
 
     @Test
     void testImportLevelsNull() {
-        assertThrows(NullPointerException.class, () -> ranks.importRanks(null));
+        RankEntity rankEntity = new RankEntity(new Rank("OLD", 1), null, null);
+        assertThrows(NullPointerException.class, () -> ranks.fillRanks(null, List.of(rankEntity)));
     }
 
     @Test
     void testImportLevelsNullField() {
+        RankEntity rankEntity = new RankEntity(new Rank("OLD", 1), null, null);
+
         WebRankUpConfig webConfig = new WebRankUpConfig();
         webConfig.setCustomRanks(null);
         webConfig.setEnableCustomRanks(true);
-        assertThrows(IllegalArgumentException.class, () -> ranks.importRanks(webConfig));
+        assertThrows(IllegalArgumentException.class, () -> ranks.fillRanks(webConfig, List.of(rankEntity)));
     }
 
     @Test
     void testImportLevelsEmpty() {
-        RankEntity rankEntity = new RankEntity(null, 10L, null);
-        when(repository.findAll()).thenReturn(List.of(rankEntity));
+        RankEntity rankEntity = new RankEntity(new Rank("OLD", 1), null, null);
 
         WebRankUpConfig webConfig = new WebRankUpConfig();
         webConfig.setEnableCustomRanks(true);
         webConfig.setCustomRanks("");
-        assertThrows(IllegalArgumentException.class, () -> ranks.importRanks(webConfig));
+        assertThrows(IllegalArgumentException.class, () -> ranks.fillRanks(webConfig, List.of(rankEntity)));
     }
 }

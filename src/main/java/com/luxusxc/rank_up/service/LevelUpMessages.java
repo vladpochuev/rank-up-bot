@@ -2,7 +2,6 @@ package com.luxusxc.rank_up.service;
 
 import com.luxusxc.rank_up.model.RankEntity;
 import com.luxusxc.rank_up.model.WebRankUpConfig;
-import com.luxusxc.rank_up.repository.RankRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -11,13 +10,12 @@ import java.util.List;
 @Service
 @AllArgsConstructor
 public class LevelUpMessages {
-    private final RankRepository repository;
     private final VariableReplacer variableReplacer;
 
-    public void importMessage(WebRankUpConfig webConfig) {
+    public void fillMessage(WebRankUpConfig webConfig, List<RankEntity> rankEntities) {
         String message = webConfig.getLevelUpMessage();
         throwIfNullOrEmpty(message);
-        saveCustomMessage(message);
+        saveCustomMessage(rankEntities, message);
     }
 
     private void throwIfNullOrEmpty(String str) {
@@ -26,12 +24,10 @@ public class LevelUpMessages {
         }
     }
 
-    private void saveCustomMessage(String message) {
-        List<RankEntity> ranks = (List<RankEntity>) repository.findAll();
-        for (RankEntity rank : ranks) {
+    private void saveCustomMessage(List<RankEntity> rankEntities, String message) {
+        for (RankEntity rank : rankEntities) {
             String messageWithRank = variableReplacer.replaceRankVars(message, rank);
             rank.setLevelUpMessage(messageWithRank);
         }
-        repository.saveAll(ranks);
     }
 }
