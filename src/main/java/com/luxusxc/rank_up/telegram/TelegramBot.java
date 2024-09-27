@@ -37,10 +37,9 @@ public class TelegramBot extends TelegramLongPollingBot {
         super(config.getToken());
         this.config = config;
         this.commandParser = commandParser;
-        addListOfCommands();
     }
 
-    private void addListOfCommands() {
+    public void setBotCommands() {
         List<BotCommand> listOfCommands = new ArrayList<>();
         for (CommandType command : CommandType.values()) {
             listOfCommands.add(new BotCommand(command.body, command.description));
@@ -55,6 +54,7 @@ public class TelegramBot extends TelegramLongPollingBot {
 
     @Override
     public void onUpdateReceived(Update update) {
+        setBotCommands();
         if (update.hasMessage() && update.getMessage().hasText()) {
             Message message = update.getMessage();
             handleCommand(message);
@@ -94,20 +94,20 @@ public class TelegramBot extends TelegramLongPollingBot {
         sendMessage(chatId, textToSend, null);
     }
 
-    public void sendMessage(SendMessage message) {
-        try {
-            execute(message);
-        } catch (TelegramApiException e) {
-            log.error("Error occurred: " + e.getMessage());
-        }
-    }
-
     public void sendMessage(long chatId, String textToSend, String parseMode) {
         SendMessage message = new SendMessage();
         message.setChatId(String.valueOf(chatId));
         message.setText(textToSend);
         message.setParseMode(parseMode);
         sendMessage(message);
+    }
+
+    public void sendMessage(SendMessage message) {
+        try {
+            execute(message);
+        } catch (TelegramApiException e) {
+            log.error("Error occurred: " + e.getMessage());
+        }
     }
 
     @Override

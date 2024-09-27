@@ -13,8 +13,7 @@
 
 <form method="POST" th:action="@{/}" th:object="${webConfig}">
     <div class="check">
-        <h2 th:if="${webConfig.enableAll}"></h2>
-        <input type="checkbox" th:checked="${webConfig.enableAll}" th:field="*{enableAll}">
+        <input class="enableAll" type="checkbox" th:checked="${webConfig.enableAll}" th:field="*{enableAll}">
         <span class="check_title">Enable levels &amp; XP</span>
     </div>
 
@@ -48,7 +47,7 @@
 
     <div id="level_up" class="inner_block">
         <div class="check">
-            <input type="checkbox" th:checked="${webConfig.announceLevelUp}" th:field="*{announceLevelUp}">
+            <input class="announceLvl" type="checkbox" th:checked="${webConfig.announceLevelUp}" th:field="*{announceLevelUp}">
             <span class="check_title">Announce level up</span>
         </div>
 

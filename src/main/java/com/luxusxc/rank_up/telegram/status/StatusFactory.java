@@ -9,10 +9,9 @@ public class StatusFactory {
     private final TelegramBot bot;
 
     public Command getStatus(StatusType status) {
+        if (status == null) throw new IllegalArgumentException();
         switch (status) {
-            case DEFAULT -> {
-
-            }
+            case DEFAULT -> {}
         }
         return null;
     }

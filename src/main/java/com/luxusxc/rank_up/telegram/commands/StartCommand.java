@@ -11,7 +11,5 @@ public class StartCommand extends Command {
         super(bot);
     }
 
-    public void execute(Message message) {
-
-    }
+    public void execute(Message message) {}
 }

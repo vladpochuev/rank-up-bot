@@ -11,7 +11,8 @@ public class CallbackFactory {
         if (callback == null) throw new IllegalArgumentException();
 
         switch (callback) {
-            default -> throw new IllegalArgumentException();
+
         }
+        throw new IllegalArgumentException();
     }
 }

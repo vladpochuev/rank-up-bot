@@ -7,6 +7,7 @@ import com.luxusxc.rank_up.model.WebRankUpConfig;
 import com.luxusxc.rank_up.repository.DefaultRankRepository;
 import com.luxusxc.rank_up.repository.RankRepository;
 import org.junit.jupiter.api.Test;
+import org.springframework.boot.test.context.SpringBootTest;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -14,9 +14,7 @@ public class CommandFactory {
             case START -> {
                 return new StartCommand(bot);
             }
-            default -> {
-                return new UnknownCommand(bot);
-            }
         }
+        return new UnknownCommand(bot);
     }
 }
