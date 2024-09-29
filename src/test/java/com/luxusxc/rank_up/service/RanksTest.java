@@ -1,13 +1,11 @@
 package com.luxusxc.rank_up.service;
 
 import com.luxusxc.rank_up.model.DefaultRankEntity;
-import com.luxusxc.rank_up.model.Rank;
 import com.luxusxc.rank_up.model.RankEntity;
 import com.luxusxc.rank_up.model.WebRankUpConfig;
 import com.luxusxc.rank_up.repository.DefaultRankRepository;
 import com.luxusxc.rank_up.repository.RankRepository;
 import org.junit.jupiter.api.Test;
-import org.springframework.boot.test.context.SpringBootTest;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -15,7 +13,8 @@ import java.util.List;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 public class RanksTest {
     private final Ranks ranks;
@@ -32,7 +31,7 @@ public class RanksTest {
     void testExportRank() {
         List<RankEntity> rankEntities = new ArrayList<>();
         String levelUpMessage = "name: {name}";
-        rankEntities.add(new RankEntity(new Rank("TEST1", 1), 10L, levelUpMessage));
+        rankEntities.add(new RankEntity(1, "TEST1", 10L, levelUpMessage));
 
         when(repository.findAll()).thenReturn(rankEntities);
         assertThat(ranks.exportRanks(), equalTo("TEST1"));
@@ -42,9 +41,9 @@ public class RanksTest {
     void testExportRanks() {
         List<RankEntity> rankEntities = new ArrayList<>();
         String levelUpMessage = "name: {name}";
-        rankEntities.add(new RankEntity(new Rank("TEST1", 1), 10L, levelUpMessage));
-        rankEntities.add(new RankEntity(new Rank("TEST2", 2), 20L, levelUpMessage));
-        rankEntities.add(new RankEntity(new Rank("TEST3", 3), 30L, levelUpMessage));
+        rankEntities.add(new RankEntity(1, "TEST1", 10L, levelUpMessage));
+        rankEntities.add(new RankEntity(2, "TEST2", 20L, levelUpMessage));
+        rankEntities.add(new RankEntity(3, "TEST3", 30L, levelUpMessage));
 
         when(repository.findAll()).thenReturn(rankEntities);
         assertThat(ranks.exportRanks(), equalTo("TEST1\nTEST2\nTEST3"));
@@ -76,27 +75,27 @@ public class RanksTest {
     @Test
     void testExportRanksNullRankName() {
         List<RankEntity> rankEntities = new ArrayList<>();
-        rankEntities.add(new RankEntity(new Rank(null, 1), 10L, "name: {name}"));
+        rankEntities.add(new RankEntity(1, null, 10L, "name: {name}"));
         when(repository.findAll()).thenReturn(rankEntities);
         assertThrows(NullPointerException.class, ranks::exportRanks);
     }
 
     @Test
     void testImportRanksCustom() {
-        RankEntity rankEntity = new RankEntity(new Rank("OLD", 1), null, null);
+        RankEntity rankEntity = new RankEntity(1, "OLD", null, null);
 
         WebRankUpConfig webConfig = new WebRankUpConfig();
         webConfig.setEnableCustomRanks(true);
         webConfig.setCustomRanks("NEW");
         ranks.fillRanks(webConfig, List.of(rankEntity));
 
-        assertThat(rankEntity.getRank(), equalTo(new Rank("NEW", 1)));
+        assertThat(rankEntity.getName(), equalTo("NEW"));
     }
 
     @Test
     void testImportRanksDefault() {
         RankEntity rankEntity = new RankEntity(null, null, null);
-        DefaultRankEntity defaultRankEntity = new DefaultRankEntity(new Rank("OLD", 1), null);
+        DefaultRankEntity defaultRankEntity = new DefaultRankEntity(1, "OLD", null);
         when(defaultRepository.findAll()).thenReturn(List.of(defaultRankEntity));
 
         WebRankUpConfig webConfig = new WebRankUpConfig();
@@ -104,18 +103,18 @@ public class RanksTest {
         webConfig.setCustomRanks("NEW");
         ranks.fillRanks(webConfig, List.of(rankEntity));
 
-        assertThat(rankEntity.getRank(), equalTo(defaultRankEntity.getRank()));
+        assertThat(rankEntity.getName(), equalTo(defaultRankEntity.getName()));
     }
 
     @Test
     void testImportLevelsNull() {
-        RankEntity rankEntity = new RankEntity(new Rank("OLD", 1), null, null);
+        RankEntity rankEntity = new RankEntity(1, "OLD", null, null);
         assertThrows(NullPointerException.class, () -> ranks.fillRanks(null, List.of(rankEntity)));
     }
 
     @Test
     void testImportLevelsNullField() {
-        RankEntity rankEntity = new RankEntity(new Rank("OLD", 1), null, null);
+        RankEntity rankEntity = new RankEntity(1, "OLD", null, null);
 
         WebRankUpConfig webConfig = new WebRankUpConfig();
         webConfig.setCustomRanks(null);
@@ -125,7 +124,7 @@ public class RanksTest {
 
     @Test
     void testImportLevelsEmpty() {
-        RankEntity rankEntity = new RankEntity(new Rank("OLD", 1), null, null);
+        RankEntity rankEntity = new RankEntity(1, "OLD", null, null);
 
         WebRankUpConfig webConfig = new WebRankUpConfig();
         webConfig.setEnableCustomRanks(true);

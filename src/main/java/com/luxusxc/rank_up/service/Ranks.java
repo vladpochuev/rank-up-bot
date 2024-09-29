@@ -30,14 +30,15 @@ public class Ranks {
         List<String> rankNames = stringSplitter.split(ranks, DELIMITER);
         if (rankNames.equals(List.of())) throw new IllegalArgumentException();
         for (int i = 0; i < rankEntities.size(); i++) {
-            rankEntities.get(i).setRank(new Rank(rankNames.get(i), i + 1));
+            rankEntities.get(i).setName(rankNames.get(i));
         }
     }
 
     private void fillFromDefaultRanks(List<RankEntity> rankEntities) {
         List<RankEntity> defaultRankEntities = getRankEntitiesFromDefault();
         for (int i = 0; i < rankEntities.size(); i++) {
-            rankEntities.get(i).setRank(defaultRankEntities.get(i).getRank());
+            rankEntities.get(i).setName(defaultRankEntities.get(i).getName());
+            rankEntities.get(i).setLevel(defaultRankEntities.get(i).getLevel());
         }
     }
 
@@ -54,9 +55,8 @@ public class Ranks {
 
     private List<String> getRankNames(List<RankEntity> ranks) {
         return ranks.stream()
-                .map(RankEntity::getRank)
                 .map(rank -> {
-                    String rankName = rank.getRankName();
+                    String rankName = rank.getName();
                     if (rankName == null) {
                         throw new NullPointerException();
                     }

@@ -12,6 +12,12 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class DefaultRankEntity {
     @Id
-    private Rank rank;
+    private Integer level;
+    private String name;
     private Long experience;
+
+    public DefaultRankEntity(String name, Long experience) {
+        this.name = name;
+        this.experience = experience;
+    }
 }

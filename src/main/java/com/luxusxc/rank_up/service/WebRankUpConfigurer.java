@@ -45,7 +45,7 @@ public class WebRankUpConfigurer {
     }
 
     private void save(List<RankEntity> rankEntities) {
-        rankRepository.deleteAll();
+        rankRepository.truncate();
         rankRepository.saveAll(rankEntities);
     }
 

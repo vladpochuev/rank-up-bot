@@ -1,5 +1,6 @@
 package com.luxusxc.rank_up.telegram;
 
+import com.luxusxc.rank_up.config.BotConfig;
 import com.luxusxc.rank_up.service.CommandParser;
 import com.luxusxc.rank_up.telegram.callbacks.Callback;
 import com.luxusxc.rank_up.telegram.callbacks.CallbackFactory;
@@ -7,7 +8,6 @@ import com.luxusxc.rank_up.telegram.callbacks.CallbackType;
 import com.luxusxc.rank_up.telegram.commands.Command;
 import com.luxusxc.rank_up.telegram.commands.CommandFactory;
 import com.luxusxc.rank_up.telegram.commands.CommandType;
-import com.luxusxc.rank_up.config.BotConfig;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
@@ -16,6 +16,7 @@ import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.api.methods.commands.SetMyCommands;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
+import org.telegram.telegrambots.meta.api.objects.ChatMemberUpdated;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.api.objects.commands.BotCommand;
@@ -32,11 +33,15 @@ import java.util.List;
 public class TelegramBot extends TelegramLongPollingBot {
     private final BotConfig config;
     private final CommandParser commandParser;
+    private final JoinChatHandler joinChatHandler;
+    private final ChatMessageProcessor chatMessageProcessor;
 
-    public TelegramBot(BotConfig config, CommandParser commandParser) {
+    public TelegramBot(BotConfig config, CommandParser commandParser, JoinChatHandler joinChatHandler, ChatMessageProcessor chatMessageProcessor) {
         super(config.getToken());
         this.config = config;
         this.commandParser = commandParser;
+        this.joinChatHandler = joinChatHandler;
+        this.chatMessageProcessor = chatMessageProcessor;
     }
 
     public void setBotCommands() {
@@ -55,9 +60,18 @@ public class TelegramBot extends TelegramLongPollingBot {
     @Override
     public void onUpdateReceived(Update update) {
         setBotCommands();
+        if (update.hasMyChatMember()) {
+            ChatMemberUpdated myChatMember = update.getMyChatMember();
+            joinChatHandler.updateChatInfo(myChatMember);
+        }
+
         if (update.hasMessage() && update.getMessage().hasText()) {
             Message message = update.getMessage();
-            handleCommand(message);
+            if (update.getMessage().getChat().isGroupChat() || update.getMessage().getChat().isSuperGroupChat()) {
+                chatMessageProcessor.processMessage(message);
+            } else if (update.getMessage().getChat().isUserChat()) {
+                handleCommand(message);
+            }
         } else if (update.hasCallbackQuery()) {
             CallbackQuery callbackQuery = update.getCallbackQuery();
             handleCallback(callbackQuery);

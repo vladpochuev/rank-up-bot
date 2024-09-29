@@ -1,7 +1,6 @@
 package com.luxusxc.rank_up.service;
 
 import com.luxusxc.rank_up.model.DefaultRankEntity;
-import com.luxusxc.rank_up.model.Rank;
 import com.luxusxc.rank_up.model.RankEntity;
 import com.luxusxc.rank_up.model.WebRankUpConfig;
 import com.luxusxc.rank_up.repository.DefaultRankRepository;
@@ -14,7 +13,8 @@ import java.util.List;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 public class LevelsTest {
     private final Levels levels;
@@ -30,9 +30,8 @@ public class LevelsTest {
     @Test
     void testExportLevel() {
         List<RankEntity> rankEntities = new ArrayList<>();
-        Rank rank = new Rank();
         String levelUpMessage = "name: {name}";
-        rankEntities.add(new RankEntity(rank, 10L, levelUpMessage));
+        rankEntities.add(new RankEntity(null, 10L, levelUpMessage));
 
         when(repository.findAll()).thenReturn(rankEntities);
         assertThat(levels.exportLevels(), equalTo("10"));
@@ -41,11 +40,10 @@ public class LevelsTest {
     @Test
     void testExportLevels() {
         List<RankEntity> rankEntities = new ArrayList<>();
-        Rank rank = new Rank();
         String levelUpMessage = "name: {name}";
-        rankEntities.add(new RankEntity(rank, 10L, levelUpMessage));
-        rankEntities.add(new RankEntity(rank, 20L, levelUpMessage));
-        rankEntities.add(new RankEntity(rank, 30L, levelUpMessage));
+        rankEntities.add(new RankEntity(null, 10L, levelUpMessage));
+        rankEntities.add(new RankEntity(null, 20L, levelUpMessage));
+        rankEntities.add(new RankEntity(null, 30L, levelUpMessage));
 
         when(repository.findAll()).thenReturn(rankEntities);
         assertThat(levels.exportLevels(), equalTo("10, 20, 30"));
@@ -69,7 +67,7 @@ public class LevelsTest {
     @Test
     void testExportLevelsNullField() {
         List<RankEntity> rankEntities = new ArrayList<>();
-        rankEntities.add(new RankEntity(new Rank(), null, "name: {name}"));
+        rankEntities.add(new RankEntity(null, null, "name: {name}"));
         when(repository.findAll()).thenReturn(rankEntities);
         assertThrows(NullPointerException.class, levels::exportLevels);
     }

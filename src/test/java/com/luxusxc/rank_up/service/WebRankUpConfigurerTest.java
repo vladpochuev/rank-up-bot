@@ -5,18 +5,14 @@ import com.luxusxc.rank_up.repository.DefaultRankRepository;
 import com.luxusxc.rank_up.repository.ImageRepository;
 import com.luxusxc.rank_up.repository.RankRepository;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
-
 
 import java.util.ArrayList;
 import java.util.List;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.*;
 
 public class WebRankUpConfigurerTest {
@@ -47,14 +43,14 @@ public class WebRankUpConfigurerTest {
     @BeforeEach
     void init() {
         List<RankEntity> rankEntities = new ArrayList<>();
-        rankEntities.add(new RankEntity(new Rank("HERALD", 1), 10L, ""));
-        rankEntities.add(new RankEntity(new Rank("GUARDIAN", 2), 20L, ""));
-        rankEntities.add(new RankEntity(new Rank("CRUSADER", 3), 30L, ""));
+        rankEntities.add(new RankEntity(1, "HERALD", 10L, ""));
+        rankEntities.add(new RankEntity(2, "GUARDIAN", 20L, ""));
+        rankEntities.add(new RankEntity(3, "CRUSADER", 30L, ""));
 
         List<DefaultRankEntity> defaultRankEntities = new ArrayList<>();
-        defaultRankEntities.add(new DefaultRankEntity(new Rank("ARCHON", 1), 20L));
-        defaultRankEntities.add(new DefaultRankEntity(new Rank("LEGEND", 2), 40L));
-        defaultRankEntities.add(new DefaultRankEntity(new Rank("ANCIENT", 3), 60L));
+        defaultRankEntities.add(new DefaultRankEntity(1, "ARCHON", 20L));
+        defaultRankEntities.add(new DefaultRankEntity(2, "LEGEND", 40L));
+        defaultRankEntities.add(new DefaultRankEntity(3, "ANCIENT", 60L));
 
         List<ImageEntity> imageEntities = new ArrayList<>();
         imageEntities.add(new ImageEntity("https://imgur.com/6XexEbp"));
@@ -110,7 +106,7 @@ public class WebRankUpConfigurerTest {
         verify(rankRepository).saveAll(captor.capture());
 
         RankEntity capturedEntities = captor.getValue().get(0);
-        RankEntity expected = new RankEntity(new Rank("ANCIENT", 1), 20L, "1: ANCIENT");
+        RankEntity expected = new RankEntity(1, "ANCIENT", 20L, "1: ANCIENT");
         assertThat(capturedEntities, equalTo(expected));
     }
 
@@ -128,7 +124,7 @@ public class WebRankUpConfigurerTest {
         verify(rankRepository).saveAll(captor.capture());
 
         RankEntity capturedEntities = captor.getValue().get(0);
-        RankEntity expected = new RankEntity(new Rank("ARCHON", 1), 5L, "1: ARCHON");
+        RankEntity expected = new RankEntity(1, "ARCHON", 5L, "1: ARCHON");
         assertThat(capturedEntities, equalTo(expected));
     }
 
@@ -147,7 +143,7 @@ public class WebRankUpConfigurerTest {
         verify(rankRepository).saveAll(captor.capture());
 
         RankEntity capturedEntities = captor.getValue().get(0);
-        RankEntity expected = new RankEntity(new Rank("ARCHON", 1), 12L, "1: ARCHON");
+        RankEntity expected = new RankEntity(1, "ARCHON", 12L, "1: ARCHON");
         assertThat(capturedEntities, equalTo(expected));
     }
 }

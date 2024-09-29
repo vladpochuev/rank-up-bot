@@ -14,11 +14,16 @@ import java.sql.Timestamp;
 @AllArgsConstructor
 public class UserEntity {
     @Id
-    private long chatId;
-    private String name;
+    private ChatUserId chatUserId;
+    private String firstName;
+    private String lastName;
     private String username;
     private String languageCode;
     private Timestamp registeredAt;
-    private Rank rank;
-    private Integer experience;
+    private Integer rankLevel;
+    private Long experience;
+
+    public UserEntity(ChatUserId chatUserId) {
+        this.chatUserId = chatUserId;
+    }
 }

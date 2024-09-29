@@ -11,9 +11,7 @@ public class RankEntityFactory {
     public List<RankEntity> mapDefaultRanksToRegular(List<DefaultRankEntity> defaultRanks) {
         return defaultRanks
                 .stream()
-                .map(DefaultRankEntity::getRank)
-                .map(RankEntity::new)
+                .map(d -> new RankEntity(d.getLevel(), d.getName(), d.getExperience(), null))
                 .toList();
     }
-
 }

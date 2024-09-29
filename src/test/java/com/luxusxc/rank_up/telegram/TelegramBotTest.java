@@ -2,9 +2,7 @@ package com.luxusxc.rank_up.telegram;
 
 import com.luxusxc.rank_up.config.BotConfig;
 import com.luxusxc.rank_up.service.CommandParser;
-import com.luxusxc.rank_up.telegram.commands.Command;
 import com.luxusxc.rank_up.telegram.commands.CommandType;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
@@ -14,8 +12,6 @@ import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.telegram.telegrambots.meta.api.methods.commands.SetMyCommands;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
-import org.telegram.telegrambots.meta.api.objects.Message;
-import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.api.objects.commands.BotCommand;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
