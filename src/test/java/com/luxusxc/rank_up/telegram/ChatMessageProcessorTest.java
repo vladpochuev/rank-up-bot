@@ -23,10 +23,12 @@ public class ChatMessageProcessorTest {
     private final UserRepository userRepository;
     private final RankRepository rankRepository;
     private final ChatMessageProcessor chatMessageProcessor;
+    private final TelegramBot bot;
 
     public ChatMessageProcessorTest() {
         userRepository = mock();
         rankRepository = mock();
+        bot = mock();
         chatMessageProcessor = new ChatMessageProcessor(userRepository, rankRepository);
     }
 
@@ -45,7 +47,7 @@ public class ChatMessageProcessorTest {
         message.setChat(new Chat(-1L, "supergroup"));
         message.setFrom(new User(-2L, "", false));
 
-        chatMessageProcessor.processMessage(message);
+        chatMessageProcessor.processMessage(message).run(bot);
         ArgumentCaptor<UserEntity> captor = ArgumentCaptor.forClass(UserEntity.class);
         verify(userRepository).save(captor.capture());
 
@@ -67,7 +69,7 @@ public class ChatMessageProcessorTest {
         message.setChat(new Chat(user.getChatUserId().getChatId(), "supergroup"));
         message.setFrom(new User(user.getChatUserId().getUserId(), "", false));
 
-        chatMessageProcessor.processMessage(message);
+        chatMessageProcessor.processMessage(message).run(bot);
         ArgumentCaptor<UserEntity> captor = ArgumentCaptor.forClass(UserEntity.class);
         verify(userRepository).save(captor.capture());
 
@@ -86,7 +88,7 @@ public class ChatMessageProcessorTest {
         message.setChat(new Chat(user.getChatUserId().getChatId(), "supergroup"));
         message.setFrom(new User(user.getChatUserId().getUserId(), "", false));
 
-        chatMessageProcessor.processMessage(message);
+        chatMessageProcessor.processMessage(message).run(bot);
         ArgumentCaptor<UserEntity> captor = ArgumentCaptor.forClass(UserEntity.class);
         verify(userRepository).save(captor.capture());
 
@@ -106,7 +108,7 @@ public class ChatMessageProcessorTest {
         message.setChat(new Chat(user.getChatUserId().getChatId(), "supergroup"));
         message.setFrom(new User(user.getChatUserId().getUserId(), "", false));
 
-        chatMessageProcessor.processMessage(message);
+        chatMessageProcessor.processMessage(message).run(bot);
         ArgumentCaptor<UserEntity> captor = ArgumentCaptor.forClass(UserEntity.class);
         verify(userRepository, times(0)).save(captor.capture());
     }

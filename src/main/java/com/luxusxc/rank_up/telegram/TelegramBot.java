@@ -1,12 +1,6 @@
 package com.luxusxc.rank_up.telegram;
 
 import com.luxusxc.rank_up.config.BotConfig;
-import com.luxusxc.rank_up.service.CommandParser;
-import com.luxusxc.rank_up.telegram.callbacks.Callback;
-import com.luxusxc.rank_up.telegram.callbacks.CallbackFactory;
-import com.luxusxc.rank_up.telegram.callbacks.CallbackType;
-import com.luxusxc.rank_up.telegram.commands.Command;
-import com.luxusxc.rank_up.telegram.commands.CommandFactory;
 import com.luxusxc.rank_up.telegram.commands.CommandType;
 import lombok.Getter;
 import lombok.Setter;
@@ -15,9 +9,6 @@ import org.springframework.stereotype.Service;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.api.methods.commands.SetMyCommands;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
-import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
-import org.telegram.telegrambots.meta.api.objects.ChatMemberUpdated;
-import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.api.objects.commands.BotCommand;
 import org.telegram.telegrambots.meta.api.objects.commands.scope.BotCommandScopeDefault;
@@ -32,76 +23,38 @@ import java.util.List;
 @Service
 public class TelegramBot extends TelegramLongPollingBot {
     private final BotConfig config;
-    private final CommandParser commandParser;
-    private final JoinChatHandler joinChatHandler;
-    private final ChatMessageProcessor chatMessageProcessor;
+    private final DecisionCenter decisionCenter;
 
-    public TelegramBot(BotConfig config, CommandParser commandParser, JoinChatHandler joinChatHandler, ChatMessageProcessor chatMessageProcessor) {
+    public TelegramBot(BotConfig config, DecisionCenter decisionCenter) {
         super(config.getToken());
         this.config = config;
-        this.commandParser = commandParser;
-        this.joinChatHandler = joinChatHandler;
-        this.chatMessageProcessor = chatMessageProcessor;
-    }
-
-    public void setBotCommands() {
-        List<BotCommand> listOfCommands = new ArrayList<>();
-        for (CommandType command : CommandType.values()) {
-            listOfCommands.add(new BotCommand(command.body, command.description));
-        }
-
-        try {
-            execute(new SetMyCommands(listOfCommands, new BotCommandScopeDefault(), null));
-        } catch (TelegramApiException e) {
-            log.error("Error setting bot`s command list " + e.getMessage());
-        }
+        this.decisionCenter = decisionCenter;
     }
 
     @Override
     public void onUpdateReceived(Update update) {
         setBotCommands();
-        if (update.hasMyChatMember()) {
-            ChatMemberUpdated myChatMember = update.getMyChatMember();
-            joinChatHandler.updateChatInfo(myChatMember);
-        }
-
-        if (update.hasMessage() && update.getMessage().hasText()) {
-            Message message = update.getMessage();
-            if (update.getMessage().getChat().isGroupChat() || update.getMessage().getChat().isSuperGroupChat()) {
-                chatMessageProcessor.processMessage(message);
-            } else if (update.getMessage().getChat().isUserChat()) {
-                handleCommand(message);
-            }
-        } else if (update.hasCallbackQuery()) {
-            CallbackQuery callbackQuery = update.getCallbackQuery();
-            handleCallback(callbackQuery);
+        BotAction action = decisionCenter.processUpdate(update);
+        if (action != null) {
+            action.run(this);
         }
     }
 
-    private void handleCommand(Message message) {
-        String messageText = message.getText();
-        Command command = defineCommand(messageText);
-        command.execute(message);
+    public void setBotCommands() {
+        try {
+            List<BotCommand> commands = extractCommands();
+            execute(new SetMyCommands(commands, new BotCommandScopeDefault(), null));
+        } catch (TelegramApiException e) {
+            log.error("Error setting bot`s command list " + e.getMessage());
+        }
     }
 
-    private Command defineCommand(String messageText) {
-        CommandFactory commandFactory = new CommandFactory(this);
-        String commandBody = commandParser.getCommandBody(messageText);
-        CommandType commandType = CommandType.getInstance(commandBody);
-        return commandFactory.getCommand(commandType);
-    }
-
-    private void handleCallback(CallbackQuery callbackQuery) {
-        String value = callbackQuery.getData();
-        String prefix = value.split("_")[0];
-        Callback callback = defineCallback(prefix);
-        callback.execute(callbackQuery);
-    }
-
-    private Callback defineCallback(String prefix) {
-        CallbackFactory callbackFactory = new CallbackFactory(this);
-        CallbackType callbackType = CallbackType.getInstance(prefix);
-        return callbackFactory.getCallback(callbackType);
+    private List<BotCommand> extractCommands() {
+        List<BotCommand> listOfCommands = new ArrayList<>();
+        for (CommandType command : CommandType.values()) {
+            listOfCommands.add(new BotCommand(command.body, command.description));
+        }
+        return listOfCommands;
     }
 
     public void sendMessage(long chatId, String textToSend) {

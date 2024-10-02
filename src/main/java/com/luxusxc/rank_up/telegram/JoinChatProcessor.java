@@ -12,21 +12,23 @@ import org.telegram.telegrambots.meta.api.objects.chatmember.ChatMember;
 @Service
 @Slf4j
 @AllArgsConstructor
-public class JoinChatHandler {
+public class JoinChatProcessor {
     private final ChatRepository chatRepository;
 
-    public void updateChatInfo(ChatMemberUpdated myChatMember) {
+    public BotAction updateChatInfo(ChatMemberUpdated myChatMember) {
         ChatMember oldMember = myChatMember.getOldChatMember();
         ChatMember newMember = myChatMember.getNewChatMember();
         Chat chat = myChatMember.getChat();
 
-        if (!chat.isGroupChat() && !chat.isSuperGroupChat()) return;
+        if (!chat.isGroupChat() && !chat.isSuperGroupChat()) return null;
 
-        if ((isMember(oldMember) || isKicked(oldMember)) && isAdmin(newMember)) {
-            ChatEntity chatEntity = new ChatEntity(chat.getId(), chat.getTitle(), myChatMember.getDate());
-            chatRepository.save(chatEntity);
-            log.info("Created new chat with id " + chat.getId());
-        }
+        return bot -> {
+            if ((isMember(oldMember) || isKicked(oldMember)) && isAdmin(newMember)) {
+                ChatEntity chatEntity = new ChatEntity(chat.getId(), chat.getTitle(), myChatMember.getDate());
+                chatRepository.save(chatEntity);
+                log.info("Created new chat with id " + chat.getId());
+            }
+        };
     }
 
     private boolean isMember(ChatMember chatMember) {
@@ -36,7 +38,7 @@ public class JoinChatHandler {
 
     private boolean isKicked(ChatMember chatMember) {
         String status = chatMember.getStatus();
-        return status.equals("kicked");
+        return status.equals("kicked") || status.equals("left");
     }
 
     private boolean isAdmin(ChatMember chatMember) {
