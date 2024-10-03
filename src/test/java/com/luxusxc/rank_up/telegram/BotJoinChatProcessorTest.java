@@ -12,15 +12,15 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.mockito.Mockito.*;
 
-public class JoinChatProcessorTest {
-    private final JoinChatProcessor joinChatProcessor;
+public class BotJoinChatProcessorTest {
+    private final BotJoinChatProcessor botJoinChatProcessor;
     private final ChatRepository chatRepository;
     private final TelegramBot bot;
 
-    public JoinChatProcessorTest() {
+    public BotJoinChatProcessorTest() {
         chatRepository = mock();
         bot = mock();
-        joinChatProcessor = new JoinChatProcessor(chatRepository);
+        botJoinChatProcessor = new BotJoinChatProcessor(chatRepository);
     }
 
     @Test
@@ -36,7 +36,7 @@ public class JoinChatProcessorTest {
         chatMemberUpdated.setChat(chat);
         chatMemberUpdated.setDate(1);
 
-        joinChatProcessor.updateChatInfo(chatMemberUpdated).run(bot);
+        botJoinChatProcessor.updateChatInfo(chatMemberUpdated).run(bot);
         ArgumentCaptor<ChatEntity> captor = ArgumentCaptor.forClass(ChatEntity.class);
         verify(chatRepository, times(1)).save(captor.capture());
 
@@ -59,7 +59,7 @@ public class JoinChatProcessorTest {
         chatMemberUpdated.setChat(chat);
         chatMemberUpdated.setDate(1);
 
-        joinChatProcessor.updateChatInfo(chatMemberUpdated).run(bot);
+        botJoinChatProcessor.updateChatInfo(chatMemberUpdated).run(bot);
         ArgumentCaptor<ChatEntity> captor = ArgumentCaptor.forClass(ChatEntity.class);
         verify(chatRepository, times(1)).save(captor.capture());
 
@@ -82,7 +82,7 @@ public class JoinChatProcessorTest {
         chatMemberUpdated.setChat(chat);
         chatMemberUpdated.setDate(1);
 
-        joinChatProcessor.updateChatInfo(chatMemberUpdated).run(bot);
+        botJoinChatProcessor.updateChatInfo(chatMemberUpdated).run(bot);
         ArgumentCaptor<ChatEntity> captor = ArgumentCaptor.forClass(ChatEntity.class);
         verify(chatRepository, times(1)).save(captor.capture());
 
@@ -104,7 +104,7 @@ public class JoinChatProcessorTest {
         chatMemberUpdated.setNewChatMember(newMember);
         chatMemberUpdated.setChat(chat);
 
-        joinChatProcessor.updateChatInfo(chatMemberUpdated);
+        botJoinChatProcessor.updateChatInfo(chatMemberUpdated);
         verify(chatRepository, times(0)).save(any());
     }
 
@@ -120,7 +120,7 @@ public class JoinChatProcessorTest {
         chatMemberUpdated.setNewChatMember(newMember);
         chatMemberUpdated.setChat(chat);
 
-        joinChatProcessor.updateChatInfo(chatMemberUpdated);
+        botJoinChatProcessor.updateChatInfo(chatMemberUpdated);
         verify(chatRepository, times(0)).save(any());
     }
 }

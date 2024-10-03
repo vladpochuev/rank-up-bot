@@ -12,7 +12,7 @@ import org.telegram.telegrambots.meta.api.objects.chatmember.ChatMember;
 @Service
 @Slf4j
 @AllArgsConstructor
-public class JoinChatProcessor {
+public class BotJoinChatProcessor {
     private final ChatRepository chatRepository;
 
     public BotAction updateChatInfo(ChatMemberUpdated myChatMember) {
