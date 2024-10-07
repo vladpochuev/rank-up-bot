@@ -2,16 +2,17 @@ package com.luxusxc.rank_up.telegram;
 
 import com.luxusxc.rank_up.model.ChatUserId;
 import com.luxusxc.rank_up.model.RankEntity;
+import com.luxusxc.rank_up.model.RankUpConfig;
 import com.luxusxc.rank_up.model.UserEntity;
 import com.luxusxc.rank_up.repository.RankRepository;
 import com.luxusxc.rank_up.repository.UserRepository;
+import com.luxusxc.rank_up.service.RankUpConfigHandler;
+import com.luxusxc.rank_up.service.VariableReplacer;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.User;
 
-import java.sql.Timestamp;
-import java.time.LocalDateTime;
 import java.util.Optional;
 
 @Service
@@ -19,6 +20,8 @@ import java.util.Optional;
 public class ChatMessageProcessor {
     private final UserRepository userRepository;
     private final RankRepository rankRepository;
+    private final RankUpConfigHandler configHandler;
+    private final VariableReplacer variableReplacer;
 
     public BotAction processMessage(Message message) {
         Long chatId = message.getChatId();
@@ -29,7 +32,7 @@ public class ChatMessageProcessor {
         if (userOptional.isPresent()) {
             action = updateLevel(userOptional.get());
         } else {
-            action = createNewUser(chatId, message.getFrom());
+            action = createNewUser(message.getFrom(), chatId);
         }
         return action;
     }
@@ -38,12 +41,12 @@ public class ChatMessageProcessor {
         return bot -> {
             Integer level = userEntity.getRankLevel();
             Long experience = userEntity.getExperience();
-            RankEntity rankEntity = rankRepository.findById(level).orElseThrow();
+            RankEntity rank = rankRepository.findById(level).orElseThrow();
 
-            if (experience >= rankEntity.getExperience()) {
+            if (experience >= rank.getExperience()) {
                 if (isMaxLevel(level)) return;
-                userEntity.setRankLevel(level + 1);
-                userEntity.setExperience(1L);
+                increaseLevel(userEntity);
+                announceLevelUpIfEnabled(userEntity, bot);
             } else {
                 userEntity.setExperience(experience + 1);
             }
@@ -56,19 +59,30 @@ public class ChatMessageProcessor {
         return rankRepository.findById(level + 1).isEmpty();
     }
 
-    private BotAction createNewUser(Long chatId, User user) {
+    private void increaseLevel(UserEntity userEntity) {
+        Integer level = userEntity.getRankLevel();
+        userEntity.setRankLevel(level + 1);
+        userEntity.setExperience(1L);
+    }
+
+    private void announceLevelUpIfEnabled(UserEntity userEntity, TelegramBot bot) {
+        RankUpConfig config = configHandler.getConfig();
+        if (config.isAnnounceLevelUp()) {
+            announceLevelUp(bot, userEntity);
+        }
+    }
+
+    private void announceLevelUp(TelegramBot bot, UserEntity userEntity) {
+        RankEntity newRank = rankRepository.findById(userEntity.getRankLevel()).orElseThrow();
+        String message = newRank.getLevelUpMessage();
+        String userMessage = variableReplacer.replaceUserVars(message, userEntity);
+        long chatId = userEntity.getChatUserId().getChatId();
+        bot.sendMessage(chatId, userMessage);
+    }
+
+    private BotAction createNewUser(User user, Long chatId) {
         return bot -> {
-            Timestamp now = Timestamp.valueOf(LocalDateTime.now());
-
-            UserEntity userEntity = new UserEntity();
-            userEntity.setChatUserId(new ChatUserId(chatId, user.getId()));
-            userEntity.setFirstName(user.getFirstName());
-            userEntity.setLastName(user.getLastName());
-            userEntity.setLanguageCode(user.getLanguageCode());
-            userEntity.setRegisteredAt(now);
-            userEntity.setRankLevel(1);
-            userEntity.setExperience(1L);
-
+            UserEntity userEntity = UserEntity.createFrom(user, chatId);
             userRepository.save(userEntity);
         };
     }
