@@ -1,5 +1,6 @@
 package com.luxusxc.rank_up.service;
 
+import com.luxusxc.rank_up.mapper.RankUpConfigMapper;
 import com.luxusxc.rank_up.model.*;
 import com.luxusxc.rank_up.repository.DefaultRankRepository;
 import com.luxusxc.rank_up.repository.ImageRepository;
@@ -37,7 +38,7 @@ public class WebRankUpConfigurerTest {
         Levels levels = new Levels(rankRepository, defaultRankRepository, splitter, joiner);
         Images images = new Images(imageRepository, splitter, joiner);
         LevelUpMessages messages = new LevelUpMessages(new VariableReplacer());
-        configurer = new WebRankUpConfigurer(rankRepository, defaultRankRepository, rankFactory, ranks, levels, images, messages, configHandler);
+        configurer = new WebRankUpConfigurer(rankRepository, defaultRankRepository, rankFactory, ranks, levels, images, messages, configHandler, RankUpConfigMapper.INSTANCE);
     }
 
     @BeforeEach

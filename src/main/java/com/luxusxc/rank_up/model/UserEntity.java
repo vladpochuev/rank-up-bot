@@ -19,7 +19,7 @@ public class UserEntity {
     private ChatUserId chatUserId;
     private String firstName;
     private String lastName;
-    private String username;
+    private String userName;
     private String languageCode;
     private Timestamp registeredAt;
     private Integer rankLevel;
@@ -27,19 +27,5 @@ public class UserEntity {
 
     public UserEntity(ChatUserId chatUserId) {
         this.chatUserId = chatUserId;
-    }
-
-    public static UserEntity createFrom(User user, Long chatId) {
-        UserEntity userEntity = new UserEntity();
-        userEntity.setChatUserId(new ChatUserId(chatId, user.getId()));
-        userEntity.setFirstName(user.getFirstName());
-        userEntity.setLastName(user.getLastName());
-        userEntity.setLanguageCode(user.getLanguageCode());
-        Timestamp now = Timestamp.valueOf(LocalDateTime.now());
-        userEntity.setRegisteredAt(now);
-        userEntity.setRankLevel(1);
-        userEntity.setExperience(1L);
-
-        return userEntity;
     }
 }

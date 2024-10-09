@@ -1,5 +1,6 @@
 package com.luxusxc.rank_up.telegram;
 
+import com.luxusxc.rank_up.mapper.UserMapper;
 import com.luxusxc.rank_up.model.ChatUserId;
 import com.luxusxc.rank_up.model.RankEntity;
 import com.luxusxc.rank_up.model.RankUpConfig;
@@ -22,6 +23,7 @@ public class ChatMessageProcessor {
     private final RankRepository rankRepository;
     private final RankUpConfigHandler configHandler;
     private final VariableReplacer variableReplacer;
+    private final UserMapper userMapper;
 
     public BotAction processMessage(Message message) {
         Long chatId = message.getChatId();
@@ -82,7 +84,7 @@ public class ChatMessageProcessor {
 
     private BotAction createNewUser(User user, Long chatId) {
         return bot -> {
-            UserEntity userEntity = UserEntity.createFrom(user, chatId);
+            UserEntity userEntity = userMapper.toUserEntity(user, chatId);
             userRepository.save(userEntity);
         };
     }

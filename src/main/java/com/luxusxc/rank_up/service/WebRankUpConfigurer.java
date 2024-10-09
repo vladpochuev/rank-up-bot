@@ -1,5 +1,6 @@
 package com.luxusxc.rank_up.service;
 
+import com.luxusxc.rank_up.mapper.RankUpConfigMapper;
 import com.luxusxc.rank_up.model.*;
 import com.luxusxc.rank_up.repository.DefaultRankRepository;
 import com.luxusxc.rank_up.repository.RankRepository;
@@ -19,6 +20,7 @@ public class WebRankUpConfigurer {
     private final Images images;
     private final LevelUpMessages levelUpMessages;
     private final RankUpConfigHandler configHandler;
+    private final RankUpConfigMapper configMapper;
 
     public void importWebConfig(WebRankUpConfig webConfig) {
         serializeConfig(webConfig);
@@ -51,7 +53,7 @@ public class WebRankUpConfigurer {
 
     public WebRankUpConfig exportWebConfig() {
         RankUpConfig config = configHandler.getConfig();
-        WebRankUpConfig webConfig = WebRankUpConfig.createFrom(config);
+        WebRankUpConfig webConfig = configMapper.toWebRankUpConfig(config);
         exportAllTo(webConfig);
         return webConfig;
     }

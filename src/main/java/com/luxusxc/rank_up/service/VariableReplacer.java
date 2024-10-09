@@ -2,7 +2,6 @@ package com.luxusxc.rank_up.service;
 
 import com.luxusxc.rank_up.model.RankEntity;
 import com.luxusxc.rank_up.model.UserEntity;
-import com.luxusxc.rank_up.model.Variable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;

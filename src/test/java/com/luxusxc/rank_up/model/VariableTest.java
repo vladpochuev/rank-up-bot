@@ -1,5 +1,6 @@
 package com.luxusxc.rank_up.model;
 
+import com.luxusxc.rank_up.service.Variable;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 

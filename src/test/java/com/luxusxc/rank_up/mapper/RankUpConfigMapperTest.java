@@ -1,16 +1,19 @@
-package com.luxusxc.rank_up.model;
+package com.luxusxc.rank_up.mapper;
 
+import com.luxusxc.rank_up.model.RankUpConfig;
+import com.luxusxc.rank_up.model.WebRankUpConfig;
 import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.*;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.nullValue;
 
-public class WebRankUpConfigTest {
+public class RankUpConfigMapperTest {
+    private final RankUpConfigMapper mapper = RankUpConfigMapper.INSTANCE;
     @Test
     void testCreateFromConfig() {
         RankUpConfig config = new RankUpConfig(false, true, false, true, "name: {name}");
-        WebRankUpConfig webConfig = WebRankUpConfig.createFrom(config);
+        WebRankUpConfig webConfig = mapper.toWebRankUpConfig(config);
         assertThat(webConfig.isEnableAll(), equalTo(config.isEnableAll()));
         assertThat(webConfig.isEnableCustomRanks(), equalTo(config.isEnableCustomRanks()));
         assertThat(webConfig.isEnableCustomLevels(), equalTo(config.isEnableCustomLevels()));
@@ -20,14 +23,14 @@ public class WebRankUpConfigTest {
 
     @Test
     void testCreateFromConfigNull() {
-        assertThrows(NullPointerException.class, () -> WebRankUpConfig.createFrom(null));
+        assertThat(mapper.toWebRankUpConfig(null), nullValue());
     }
 
     @Test
     void testCreateFromConfigNullFields() {
         RankUpConfig config = new RankUpConfig();
         config.setLevelUpMessageFormat(null);
-        WebRankUpConfig webConfig = WebRankUpConfig.createFrom(config);
+        WebRankUpConfig webConfig = mapper.toWebRankUpConfig(config);
         assertThat(webConfig.getLevelUpMessage(), nullValue());
     }
 }

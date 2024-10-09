@@ -1,5 +1,6 @@
 package com.luxusxc.rank_up.telegram;
 
+import com.luxusxc.rank_up.mapper.UserMapper;
 import com.luxusxc.rank_up.model.ChatUserId;
 import com.luxusxc.rank_up.model.RankEntity;
 import com.luxusxc.rank_up.model.RankUpConfig;
@@ -34,7 +35,7 @@ public class ChatMessageProcessorTest {
         rankRepository = mock();
         bot = mock();
         configHandler = mock();
-        chatMessageProcessor = new ChatMessageProcessor(userRepository, rankRepository, configHandler, new VariableReplacer());
+        chatMessageProcessor = new ChatMessageProcessor(userRepository, rankRepository, configHandler, new VariableReplacer(), UserMapper.INSTANCE);
     }
 
     @BeforeEach
