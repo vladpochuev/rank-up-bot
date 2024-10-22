@@ -1,5 +1,6 @@
 package com.luxusxc.rank_up.telegram;
 
+import com.luxusxc.rank_up.model.BotAction;
 import com.luxusxc.rank_up.model.ChatEntity;
 import com.luxusxc.rank_up.repository.ChatRepository;
 import lombok.AllArgsConstructor;

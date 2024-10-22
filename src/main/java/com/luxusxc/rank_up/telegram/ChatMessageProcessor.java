@@ -1,10 +1,7 @@
 package com.luxusxc.rank_up.telegram;
 
 import com.luxusxc.rank_up.mapper.UserMapper;
-import com.luxusxc.rank_up.model.ChatUserId;
-import com.luxusxc.rank_up.model.RankEntity;
-import com.luxusxc.rank_up.model.RankUpConfig;
-import com.luxusxc.rank_up.model.UserEntity;
+import com.luxusxc.rank_up.model.*;
 import com.luxusxc.rank_up.repository.RankRepository;
 import com.luxusxc.rank_up.repository.UserRepository;
 import com.luxusxc.rank_up.service.RankUpConfigHandler;

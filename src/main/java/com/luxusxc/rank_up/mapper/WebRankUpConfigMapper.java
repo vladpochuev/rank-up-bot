@@ -8,9 +8,9 @@ import org.mapstruct.MappingConstants;
 import org.mapstruct.factory.Mappers;
 
 @Mapper(componentModel = MappingConstants.ComponentModel.SPRING)
-public interface RankUpConfigMapper {
-    RankUpConfigMapper INSTANCE = Mappers.getMapper(RankUpConfigMapper.class);
+public interface WebRankUpConfigMapper {
+    WebRankUpConfigMapper INSTANCE = Mappers.getMapper(WebRankUpConfigMapper.class);
 
-    @Mapping(source = "levelUpMessageFormat", target = "levelUpMessage")
-    WebRankUpConfig toWebRankUpConfig(RankUpConfig config);
+    @Mapping(source = "levelUpMessage", target = "levelUpMessageFormat")
+    RankUpConfig toRankUpConfig(WebRankUpConfig webConfig);
 }

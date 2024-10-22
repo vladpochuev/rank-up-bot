@@ -5,10 +5,8 @@ import jakarta.persistence.Id;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.telegram.telegrambots.meta.api.objects.User;
 
 import java.sql.Timestamp;
-import java.time.LocalDateTime;
 
 @Entity(name = "users")
 @Data

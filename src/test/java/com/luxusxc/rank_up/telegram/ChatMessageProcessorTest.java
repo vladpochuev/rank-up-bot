@@ -53,7 +53,7 @@ public class ChatMessageProcessorTest {
         message.setChat(new Chat(-1L, "supergroup"));
         message.setFrom(new User(-2L, "", false));
 
-        chatMessageProcessor.processMessage(message).run(bot);
+        chatMessageProcessor.processMessage(message).execute(bot);
         ArgumentCaptor<UserEntity> captor = ArgumentCaptor.forClass(UserEntity.class);
         verify(userRepository).save(captor.capture());
 
@@ -75,7 +75,7 @@ public class ChatMessageProcessorTest {
         message.setChat(new Chat(user.getChatUserId().getChatId(), "supergroup"));
         message.setFrom(new User(user.getChatUserId().getUserId(), "", false));
 
-        chatMessageProcessor.processMessage(message).run(bot);
+        chatMessageProcessor.processMessage(message).execute(bot);
         ArgumentCaptor<UserEntity> captor = ArgumentCaptor.forClass(UserEntity.class);
         verify(userRepository).save(captor.capture());
 
@@ -96,7 +96,7 @@ public class ChatMessageProcessorTest {
 
         when(configHandler.getConfig()).thenReturn(new RankUpConfig());
 
-        chatMessageProcessor.processMessage(message).run(bot);
+        chatMessageProcessor.processMessage(message).execute(bot);
         ArgumentCaptor<UserEntity> captor = ArgumentCaptor.forClass(UserEntity.class);
         verify(userRepository).save(captor.capture());
 
@@ -121,7 +121,7 @@ public class ChatMessageProcessorTest {
         config.setAnnounceLevelUp(true);
         when(configHandler.getConfig()).thenReturn(config);
 
-        chatMessageProcessor.processMessage(message).run(bot);
+        chatMessageProcessor.processMessage(message).execute(bot);
         verify(bot).sendMessage(-1L, "test, GUARDIAN");
     }
 
@@ -139,7 +139,7 @@ public class ChatMessageProcessorTest {
 
         when(configHandler.getConfig()).thenReturn(new RankUpConfig());
 
-        chatMessageProcessor.processMessage(message).run(bot);
+        chatMessageProcessor.processMessage(message).execute(bot);
         verify(bot, times(0)).sendMessage(-1L, "test, GUARDIAN");
     }
 
@@ -154,7 +154,7 @@ public class ChatMessageProcessorTest {
         message.setChat(new Chat(user.getChatUserId().getChatId(), "supergroup"));
         message.setFrom(new User(user.getChatUserId().getUserId(), "", false));
 
-        chatMessageProcessor.processMessage(message).run(bot);
+        chatMessageProcessor.processMessage(message).execute(bot);
         verify(userRepository, times(0)).save(any());
     }
 }

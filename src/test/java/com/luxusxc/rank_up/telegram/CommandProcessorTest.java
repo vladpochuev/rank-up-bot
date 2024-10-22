@@ -1,5 +1,6 @@
 package com.luxusxc.rank_up.telegram;
 
+import com.luxusxc.rank_up.model.BotAction;
 import com.luxusxc.rank_up.service.CommandParser;
 import com.luxusxc.rank_up.service.StringSplitter;
 import org.junit.jupiter.api.Test;
@@ -26,7 +27,7 @@ public class CommandProcessorTest {
         message.setText("test");
 
         BotAction botAction = commandProcessor.processCommand(message);
-        botAction.run(bot);
+        botAction.execute(bot);
         verify(bot, times(1)).sendMessage(-1L, "Sorry, command was not recognized.");
     }
 }

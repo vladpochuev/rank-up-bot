@@ -1,5 +1,6 @@
 package com.luxusxc.rank_up.telegram;
 
+import com.luxusxc.rank_up.model.BotAction;
 import com.luxusxc.rank_up.model.ChatEntity;
 import com.luxusxc.rank_up.repository.ChatRepository;
 import lombok.AllArgsConstructor;
@@ -14,6 +15,7 @@ import org.telegram.telegrambots.meta.api.objects.chatmember.ChatMember;
 @AllArgsConstructor
 public class BotJoinChatProcessor {
     private final ChatRepository chatRepository;
+    private final ChatMemberStatus status;
 
     public BotAction updateChatInfo(ChatMemberUpdated myChatMember) {
         ChatMember oldMember = myChatMember.getOldChatMember();
@@ -23,26 +25,14 @@ public class BotJoinChatProcessor {
         if (!chat.isGroupChat() && !chat.isSuperGroupChat()) return null;
 
         return bot -> {
-            if ((isMember(oldMember) || isKicked(oldMember)) && isAdmin(newMember)) {
+            boolean commonMember = status.isMember(oldMember) || status.isKicked(oldMember) || status.isLeft(oldMember);
+            boolean promotedToAdmin = status.isAdmin(newMember);
+
+            if (commonMember && promotedToAdmin) {
                 ChatEntity chatEntity = new ChatEntity(chat.getId(), chat.getTitle(), myChatMember.getDate());
                 chatRepository.save(chatEntity);
                 log.info("Created new chat with id " + chat.getId());
             }
         };
-    }
-
-    private boolean isMember(ChatMember chatMember) {
-        String status = chatMember.getStatus();
-        return status.equals("member");
-    }
-
-    private boolean isKicked(ChatMember chatMember) {
-        String status = chatMember.getStatus();
-        return status.equals("kicked") || status.equals("left");
-    }
-
-    private boolean isAdmin(ChatMember chatMember) {
-        String status = chatMember.getStatus();
-        return status.equals("administrator");
     }
 }

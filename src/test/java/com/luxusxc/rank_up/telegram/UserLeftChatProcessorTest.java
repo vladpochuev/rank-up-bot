@@ -36,7 +36,7 @@ public class UserLeftChatProcessorTest {
         Chat chat = new Chat(-2L, "supergroup");
         memberUpdated.setChat(chat);
 
-        userLeftChatProcessor.processLeave(memberUpdated).run(bot);
+        userLeftChatProcessor.processLeave(memberUpdated).execute(bot);
 
         ArgumentCaptor<UserEntity> captor = ArgumentCaptor.forClass(UserEntity.class);
         verify(userRepository).delete(captor.capture());

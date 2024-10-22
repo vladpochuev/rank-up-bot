@@ -1,5 +1,6 @@
 package com.luxusxc.rank_up.telegram;
 
+import com.luxusxc.rank_up.model.BotAction;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
@@ -18,6 +19,8 @@ public class DecisionCenter {
     private final CommandProcessor commandProcessor;
     private final CallbackProcessor callbackProcessor;
 
+    private final ChatMemberStatus status;
+
     public BotAction processUpdate(Update update) {
         if (update.hasMyChatMember()) {
             return processBotUpdated(update.getMyChatMember());
@@ -32,27 +35,19 @@ public class DecisionCenter {
     }
 
     private BotAction processBotUpdated(ChatMemberUpdated botUpdated) {
-        if (isLeft(botUpdated) || isKicked(botUpdated)) {
+        ChatMember bot = botUpdated.getNewChatMember();
+        if (status.isLeft(bot) || status.isKicked(bot)) {
             return botLeftChatProcessor.processLeave(botUpdated);
         }
         return botJoinChatProcessor.updateChatInfo(botUpdated);
     }
 
     private BotAction processUserUpdated(ChatMemberUpdated userUpdated) {
-        if (isLeft(userUpdated) || isKicked(userUpdated)) {
+        ChatMember user = userUpdated.getNewChatMember();
+        if (status.isLeft(user) || status.isKicked(user)) {
             return userLeftChatProcessor.processLeave(userUpdated);
         }
         return null;
-    }
-
-    private boolean isLeft(ChatMemberUpdated memberUpdated) {
-       ChatMember newMember = memberUpdated.getNewChatMember();
-       return newMember.getStatus().equals("left");
-    }
-
-    private boolean isKicked(ChatMemberUpdated memberUpdated) {
-        ChatMember newMember = memberUpdated.getNewChatMember();
-        return newMember.getStatus().equals("kicked");
     }
 
 

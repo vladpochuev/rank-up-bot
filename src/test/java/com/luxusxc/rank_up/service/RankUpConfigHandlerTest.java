@@ -1,5 +1,6 @@
 package com.luxusxc.rank_up.service;
 
+import com.luxusxc.rank_up.mapper.WebRankUpConfigMapper;
 import com.luxusxc.rank_up.model.RankUpConfig;
 import com.luxusxc.rank_up.model.WebRankUpConfig;
 import org.junit.jupiter.api.BeforeEach;
@@ -16,7 +17,7 @@ public class RankUpConfigHandlerTest {
 
     @BeforeEach
     void getConfig() {
-        configHandler = new RankUpConfigHandler();
+        configHandler = new RankUpConfigHandler(WebRankUpConfigMapper.INSTANCE);
     }
 
     @Test

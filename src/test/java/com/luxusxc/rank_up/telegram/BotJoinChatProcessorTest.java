@@ -20,7 +20,7 @@ public class BotJoinChatProcessorTest {
     public BotJoinChatProcessorTest() {
         chatRepository = mock();
         bot = mock();
-        botJoinChatProcessor = new BotJoinChatProcessor(chatRepository);
+        botJoinChatProcessor = new BotJoinChatProcessor(chatRepository, new ChatMemberStatus());
     }
 
     @Test
@@ -36,7 +36,7 @@ public class BotJoinChatProcessorTest {
         chatMemberUpdated.setChat(chat);
         chatMemberUpdated.setDate(1);
 
-        botJoinChatProcessor.updateChatInfo(chatMemberUpdated).run(bot);
+        botJoinChatProcessor.updateChatInfo(chatMemberUpdated).execute(bot);
         ArgumentCaptor<ChatEntity> captor = ArgumentCaptor.forClass(ChatEntity.class);
         verify(chatRepository, times(1)).save(captor.capture());
 
@@ -59,7 +59,7 @@ public class BotJoinChatProcessorTest {
         chatMemberUpdated.setChat(chat);
         chatMemberUpdated.setDate(1);
 
-        botJoinChatProcessor.updateChatInfo(chatMemberUpdated).run(bot);
+        botJoinChatProcessor.updateChatInfo(chatMemberUpdated).execute(bot);
         ArgumentCaptor<ChatEntity> captor = ArgumentCaptor.forClass(ChatEntity.class);
         verify(chatRepository, times(1)).save(captor.capture());
 
@@ -82,7 +82,7 @@ public class BotJoinChatProcessorTest {
         chatMemberUpdated.setChat(chat);
         chatMemberUpdated.setDate(1);
 
-        botJoinChatProcessor.updateChatInfo(chatMemberUpdated).run(bot);
+        botJoinChatProcessor.updateChatInfo(chatMemberUpdated).execute(bot);
         ArgumentCaptor<ChatEntity> captor = ArgumentCaptor.forClass(ChatEntity.class);
         verify(chatRepository, times(1)).save(captor.capture());
 

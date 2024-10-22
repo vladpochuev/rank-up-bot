@@ -1,11 +1,8 @@
 package com.luxusxc.rank_up.model;
 
-import com.luxusxc.rank_up.repository.ImageRepository;
-import com.luxusxc.rank_up.repository.RankRepository;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.springframework.stereotype.Component;
 
 import java.io.Serial;
 import java.io.Serializable;

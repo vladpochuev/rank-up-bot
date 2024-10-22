@@ -11,9 +11,10 @@ import static org.hamcrest.Matchers.nullValue;
 public class RankUpConfigMapperTest {
     private final RankUpConfigMapper mapper = RankUpConfigMapper.INSTANCE;
     @Test
-    void testCreateFromConfig() {
+    void testToWebRankUpConfig() {
         RankUpConfig config = new RankUpConfig(false, true, false, true, "name: {name}");
         WebRankUpConfig webConfig = mapper.toWebRankUpConfig(config);
+
         assertThat(webConfig.isEnableAll(), equalTo(config.isEnableAll()));
         assertThat(webConfig.isEnableCustomRanks(), equalTo(config.isEnableCustomRanks()));
         assertThat(webConfig.isEnableCustomLevels(), equalTo(config.isEnableCustomLevels()));
@@ -22,15 +23,17 @@ public class RankUpConfigMapperTest {
     }
 
     @Test
-    void testCreateFromConfigNull() {
-        assertThat(mapper.toWebRankUpConfig(null), nullValue());
+    void testToWebRankUpConfigNull() {
+        WebRankUpConfig webConfig = mapper.toWebRankUpConfig(null);
+        assertThat(webConfig, nullValue());
     }
 
     @Test
-    void testCreateFromConfigNullFields() {
+    void testToWebRankUpConfigNullFields() {
         RankUpConfig config = new RankUpConfig();
         config.setLevelUpMessageFormat(null);
         WebRankUpConfig webConfig = mapper.toWebRankUpConfig(config);
+
         assertThat(webConfig.getLevelUpMessage(), nullValue());
     }
 }

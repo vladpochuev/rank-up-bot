@@ -1,4 +1,4 @@
-package com.luxusxc.rank_up.service;
+package com.luxusxc.rank_up.model;
 
 @FunctionalInterface
 public interface Executable<T> {

@@ -1,6 +1,7 @@
 package com.luxusxc.rank_up.telegram;
 
 import com.luxusxc.rank_up.config.BotConfig;
+import com.luxusxc.rank_up.model.BotAction;
 import com.luxusxc.rank_up.telegram.commands.CommandType;
 import lombok.Getter;
 import lombok.Setter;
@@ -36,7 +37,7 @@ public class TelegramBot extends TelegramLongPollingBot {
         setBotCommands();
         BotAction action = decisionCenter.processUpdate(update);
         if (action != null) {
-            action.run(this);
+            action.execute(this);
         }
     }
 

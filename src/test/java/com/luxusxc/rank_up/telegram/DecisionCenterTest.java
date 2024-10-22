@@ -27,7 +27,7 @@ public class DecisionCenterTest {
         this.chatMessageProcessor = mock();
         this.commandProcessor = mock();
         this.callbackProcessor = mock();
-        this.decisionCenter = new DecisionCenter(botJoinChatProcessor, botLeftChatProcessor, userLeftChatProcessor, chatMessageProcessor, commandProcessor, callbackProcessor);
+        this.decisionCenter = new DecisionCenter(botJoinChatProcessor, botLeftChatProcessor, userLeftChatProcessor, chatMessageProcessor, commandProcessor, callbackProcessor, new ChatMemberStatus());
     }
 
     @Test

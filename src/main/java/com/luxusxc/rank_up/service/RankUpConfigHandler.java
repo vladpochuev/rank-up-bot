@@ -1,5 +1,6 @@
 package com.luxusxc.rank_up.service;
 
+import com.luxusxc.rank_up.mapper.WebRankUpConfigMapper;
 import com.luxusxc.rank_up.model.RankUpConfig;
 import com.luxusxc.rank_up.model.WebRankUpConfig;
 import lombok.Getter;
@@ -12,10 +13,12 @@ import java.io.*;
 @Getter
 @Setter
 public class RankUpConfigHandler {
+    private WebRankUpConfigMapper webRankUpConfigMapper;
     private String configPath = "src/main/resources/rankUpConfig.ser";
     private RankUpConfig config;
 
-    public RankUpConfigHandler() {
+    public RankUpConfigHandler(WebRankUpConfigMapper webRankUpConfigMapper) {
+        this.webRankUpConfigMapper = webRankUpConfigMapper;
         exportConfig();
     }
 
@@ -40,10 +43,9 @@ public class RankUpConfigHandler {
     }
 
     public void fillFromWebConfig(WebRankUpConfig webConfig) {
-        config.setEnableAll(webConfig.isEnableAll());
-        config.setEnableCustomRanks(webConfig.isEnableCustomRanks());
-        config.setEnableCustomLevels(webConfig.isEnableCustomLevels());
-        config.setAnnounceLevelUp(webConfig.isAnnounceLevelUp());
-        config.setLevelUpMessageFormat(webConfig.getLevelUpMessage());
+        if (webConfig == null) {
+            throw new NullPointerException();
+        }
+        config = webRankUpConfigMapper.toRankUpConfig(webConfig);
     }
 }

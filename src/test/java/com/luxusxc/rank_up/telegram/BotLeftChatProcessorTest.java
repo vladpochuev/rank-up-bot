@@ -1,5 +1,6 @@
 package com.luxusxc.rank_up.telegram;
 
+import com.luxusxc.rank_up.model.BotAction;
 import com.luxusxc.rank_up.model.ChatEntity;
 import com.luxusxc.rank_up.repository.ChatRepository;
 import org.junit.jupiter.api.Test;
@@ -28,7 +29,7 @@ public class BotLeftChatProcessorTest {
         Chat chat = new Chat(-2L, "supergroup");
         memberUpdated.setChat(chat);
 
-        botLeftChatProcessor.processLeave(memberUpdated).run(bot);
+        botLeftChatProcessor.processLeave(memberUpdated).execute(bot);
 
         ArgumentCaptor<ChatEntity> captor = ArgumentCaptor.forClass(ChatEntity.class);
         verify(chatRepository).delete(captor.capture());
@@ -43,7 +44,7 @@ public class BotLeftChatProcessorTest {
         Chat chat = new Chat(-2L, "group");
         memberUpdated.setChat(chat);
 
-        botLeftChatProcessor.processLeave(memberUpdated).run(bot);
+        botLeftChatProcessor.processLeave(memberUpdated).execute(bot);
 
         ArgumentCaptor<ChatEntity> captor = ArgumentCaptor.forClass(ChatEntity.class);
         verify(chatRepository).delete(captor.capture());
