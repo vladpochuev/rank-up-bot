@@ -13,6 +13,8 @@ public class CommandFactory {
         switch (command) {
             case START -> {
                 return new StartCommand(bot);
+            } case CHAT_LIST -> {
+                return new ChatListCommand(bot);
             }
         }
         return new UnknownCommand(bot);

@@ -7,7 +7,7 @@ import java.util.Map;
 
 @AllArgsConstructor
 public enum CallbackType {
-    ;
+    GET_CHAT("CHAT");
 
     public final String prefix;
 

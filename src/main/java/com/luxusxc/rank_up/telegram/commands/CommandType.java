@@ -7,7 +7,8 @@ import java.util.Map;
 
 @AllArgsConstructor
 public enum CommandType {
-    START("/start", "Start using the bot");
+    START("/start", "Start using the bot"),
+    CHAT_LIST ( "/chatlist", "View the chats where you have any ranks");
 
     public final String body;
     public final String description;

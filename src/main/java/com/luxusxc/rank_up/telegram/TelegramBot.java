@@ -2,6 +2,9 @@ package com.luxusxc.rank_up.telegram;
 
 import com.luxusxc.rank_up.config.BotConfig;
 import com.luxusxc.rank_up.model.BotAction;
+import com.luxusxc.rank_up.repository.ChatRepository;
+import com.luxusxc.rank_up.repository.RankRepository;
+import com.luxusxc.rank_up.repository.UserRepository;
 import com.luxusxc.rank_up.telegram.commands.CommandType;
 import lombok.Getter;
 import lombok.Setter;
@@ -10,6 +13,7 @@ import org.springframework.stereotype.Service;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.api.methods.commands.SetMyCommands;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
+import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageText;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.api.objects.commands.BotCommand;
 import org.telegram.telegrambots.meta.api.objects.commands.scope.BotCommandScopeDefault;
@@ -25,11 +29,20 @@ import java.util.List;
 public class TelegramBot extends TelegramLongPollingBot {
     private final BotConfig config;
     private final DecisionCenter decisionCenter;
+    private final InlineKeyboardConstructor keyboardConstructor;
 
-    public TelegramBot(BotConfig config, DecisionCenter decisionCenter) {
+    private final ChatRepository chatRepository;
+    private final UserRepository userRepository;
+    private final RankRepository rankRepository;
+
+    public TelegramBot(BotConfig config, DecisionCenter decisionCenter, InlineKeyboardConstructor keyboardConstructor, ChatRepository chatRepository, UserRepository userRepository, RankRepository rankRepository) {
         super(config.getToken());
         this.config = config;
         this.decisionCenter = decisionCenter;
+        this.keyboardConstructor = keyboardConstructor;
+        this.chatRepository = chatRepository;
+        this.userRepository = userRepository;
+        this.rankRepository = rankRepository;
     }
 
     @Override
@@ -71,6 +84,14 @@ public class TelegramBot extends TelegramLongPollingBot {
     }
 
     public void sendMessage(SendMessage message) {
+        try {
+            execute(message);
+        } catch (TelegramApiException e) {
+            log.error("Error occurred: " + e.getMessage());
+        }
+    }
+
+    public void sendMessage(EditMessageText message) {
         try {
             execute(message);
         } catch (TelegramApiException e) {

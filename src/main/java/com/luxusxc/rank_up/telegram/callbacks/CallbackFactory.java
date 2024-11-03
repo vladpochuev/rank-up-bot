@@ -11,7 +11,9 @@ public class CallbackFactory {
         if (callback == null) throw new IllegalArgumentException();
 
         switch (callback) {
-
+            case GET_CHAT -> {
+                return new GetChatCallback(bot);
+            }
         }
         throw new IllegalArgumentException();
     }

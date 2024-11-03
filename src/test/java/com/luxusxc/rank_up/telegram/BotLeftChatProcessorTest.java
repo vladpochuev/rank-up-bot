@@ -3,6 +3,7 @@ package com.luxusxc.rank_up.telegram;
 import com.luxusxc.rank_up.model.BotAction;
 import com.luxusxc.rank_up.model.ChatEntity;
 import com.luxusxc.rank_up.repository.ChatRepository;
+import com.luxusxc.rank_up.repository.UserRepository;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.telegram.telegrambots.meta.api.objects.Chat;
@@ -15,12 +16,14 @@ import static org.mockito.Mockito.*;
 public class BotLeftChatProcessorTest {
     private final BotLeftChatProcessor botLeftChatProcessor;
     private final ChatRepository chatRepository;
+    private final UserRepository userRepository;
     private final TelegramBot bot;
 
     public BotLeftChatProcessorTest() {
         chatRepository = mock();
+        userRepository = mock();
         bot = mock();
-        botLeftChatProcessor = new BotLeftChatProcessor(chatRepository);
+        botLeftChatProcessor = new BotLeftChatProcessor(chatRepository, userRepository);
     }
 
     @Test
@@ -61,5 +64,15 @@ public class BotLeftChatProcessorTest {
 
         BotAction action = botLeftChatProcessor.processLeave(memberUpdated);
         assertThat(action, nullValue());
+    }
+
+    @Test
+    void testProcessLeaveGroupDeleteChatUsers() {
+        ChatMemberUpdated memberUpdated = new ChatMemberUpdated();
+        Chat chat = new Chat(-2L, "group");
+        memberUpdated.setChat(chat);
+
+        botLeftChatProcessor.processLeave(memberUpdated).execute(bot);
+        verify(userRepository, times(1)).deleteAllChatUsers(chat.getId());
     }
 }
