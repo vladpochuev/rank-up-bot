@@ -14,12 +14,23 @@ import org.telegram.telegrambots.meta.api.objects.Message;
 public class CommandProcessor {
     private final CommandParser parser;
 
-    public BotAction processCommand(Message message) {
+    public BotAction processUserCommand(Message message) {
         String messageText = message.getText();
         return bot -> {
             String commandBody = parser.getCommandBody(messageText);
             CommandFactory commandFactory = new CommandFactory(bot);
-            CommandType commandType = CommandType.getInstance(commandBody);
+            CommandType commandType = CommandType.getUserInstance(commandBody);
+            Command command = commandFactory.getCommand(commandType);
+            command.execute(message);
+        };
+    }
+
+    public BotAction processGroupCommand(Message message) {
+        String messageText = message.getText();
+        return bot -> {
+            String commandBody = parser.getCommandBody(messageText);
+            CommandFactory commandFactory = new CommandFactory(bot);
+            CommandType commandType = CommandType.getGroupInstance(commandBody);
             Command command = commandFactory.getCommand(commandType);
             command.execute(message);
         };

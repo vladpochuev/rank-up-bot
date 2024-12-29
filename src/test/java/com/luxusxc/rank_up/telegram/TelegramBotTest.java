@@ -39,18 +39,19 @@ public class TelegramBotTest {
         bot.setBotCommands();
 
         ArgumentCaptor<SetMyCommands> captor = ArgumentCaptor.forClass(SetMyCommands.class);
-        verify(bot).execute(captor.capture());
-        SetMyCommands commands = captor.getValue();
+        verify(bot, times(2)).execute(captor.capture());
+        List<SetMyCommands> commands = captor.getAllValues();
 
-        List<String> expectedCommands = commands.getCommands().stream().map(BotCommand::getCommand).toList();
-        List<String> actualCommands = Arrays.stream(CommandType.values()).map(c -> c.body).toList();
+        List<String> expectedUserCommands = commands.get(0).getCommands().stream().map(BotCommand::getCommand).toList();
+        List<String> expectedGroupCommands = commands.get(1).getCommands().stream().map(BotCommand::getCommand).toList();
+        List<String> actualUserCommands = CommandType.getUserCommands().stream().map(c -> c.body).toList();
+        List<String> actualGroupCommands = CommandType.getGroupCommands().stream().map(c -> c.body).toList();
 
-        for (String actualCommand : actualCommands) {
-            assertTrue(expectedCommands.contains(actualCommand));
-        }
-        for (String expectedCommand : expectedCommands) {
-            assertTrue(actualCommands.contains(expectedCommand));
-        }
+        assertTrue(expectedUserCommands.containsAll(actualUserCommands));
+        assertTrue(actualUserCommands.containsAll(expectedUserCommands));
+
+        assertTrue(expectedGroupCommands.containsAll(actualGroupCommands));
+        assertTrue(actualGroupCommands.containsAll(expectedGroupCommands));
     }
 
     @Test

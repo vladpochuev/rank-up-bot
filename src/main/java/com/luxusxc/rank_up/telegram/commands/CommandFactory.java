@@ -15,6 +15,8 @@ public class CommandFactory {
                 return new StartCommand(bot);
             } case CHAT_LIST -> {
                 return new ChatListCommand(bot);
+            } case STATS -> {
+                return new StatsCommand(bot);
             }
         }
         return new UnknownCommand(bot);

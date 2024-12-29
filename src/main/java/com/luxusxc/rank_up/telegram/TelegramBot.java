@@ -5,6 +5,7 @@ import com.luxusxc.rank_up.model.BotAction;
 import com.luxusxc.rank_up.repository.ChatRepository;
 import com.luxusxc.rank_up.repository.RankRepository;
 import com.luxusxc.rank_up.repository.UserRepository;
+import com.luxusxc.rank_up.service.StatsMessageFormatter;
 import com.luxusxc.rank_up.telegram.commands.CommandType;
 import lombok.Getter;
 import lombok.Setter;
@@ -16,6 +17,7 @@ import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageText;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.api.objects.commands.BotCommand;
+import org.telegram.telegrambots.meta.api.objects.commands.scope.BotCommandScopeAllGroupChats;
 import org.telegram.telegrambots.meta.api.objects.commands.scope.BotCommandScopeDefault;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
@@ -28,6 +30,7 @@ import java.util.List;
 @Service
 public class TelegramBot extends TelegramLongPollingBot {
     private final BotConfig config;
+    private final StatsMessageFormatter statsMessageFormatter;
     private final DecisionCenter decisionCenter;
     private final InlineKeyboardConstructor keyboardConstructor;
 
@@ -35,9 +38,10 @@ public class TelegramBot extends TelegramLongPollingBot {
     private final UserRepository userRepository;
     private final RankRepository rankRepository;
 
-    public TelegramBot(BotConfig config, DecisionCenter decisionCenter, InlineKeyboardConstructor keyboardConstructor, ChatRepository chatRepository, UserRepository userRepository, RankRepository rankRepository) {
+    public TelegramBot(BotConfig config, StatsMessageFormatter statsMessageFormatter, DecisionCenter decisionCenter, InlineKeyboardConstructor keyboardConstructor, ChatRepository chatRepository, UserRepository userRepository, RankRepository rankRepository) {
         super(config.getToken());
         this.config = config;
+        this.statsMessageFormatter = statsMessageFormatter;
         this.decisionCenter = decisionCenter;
         this.keyboardConstructor = keyboardConstructor;
         this.chatRepository = chatRepository;
@@ -56,16 +60,26 @@ public class TelegramBot extends TelegramLongPollingBot {
 
     public void setBotCommands() {
         try {
-            List<BotCommand> commands = extractCommands();
-            execute(new SetMyCommands(commands, new BotCommandScopeDefault(), null));
+            List<BotCommand> userCommands = extractUserCommands();
+            List<BotCommand> groupCommands = extractGroupCommands();
+            execute(new SetMyCommands(userCommands, new BotCommandScopeDefault(), null));
+            execute(new SetMyCommands(groupCommands, new BotCommandScopeAllGroupChats(), null));
         } catch (TelegramApiException e) {
             log.error("Error setting bot`s command list " + e.getMessage());
         }
     }
 
-    private List<BotCommand> extractCommands() {
+    private List<BotCommand> extractUserCommands() {
         List<BotCommand> listOfCommands = new ArrayList<>();
-        for (CommandType command : CommandType.values()) {
+        for (CommandType command : CommandType.getUserCommands()) {
+            listOfCommands.add(new BotCommand(command.body, command.description));
+        }
+        return listOfCommands;
+    }
+
+    private List<BotCommand> extractGroupCommands() {
+        List<BotCommand> listOfCommands = new ArrayList<>();
+        for (CommandType command : CommandType.getGroupCommands()) {
             listOfCommands.add(new BotCommand(command.body, command.description));
         }
         return listOfCommands;

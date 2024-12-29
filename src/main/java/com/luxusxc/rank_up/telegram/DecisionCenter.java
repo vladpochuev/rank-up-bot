@@ -1,12 +1,11 @@
 package com.luxusxc.rank_up.telegram;
 
+import com.luxusxc.rank_up.config.BotConfig;
 import com.luxusxc.rank_up.model.BotAction;
+import com.luxusxc.rank_up.telegram.commands.CommandType;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
-import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
-import org.telegram.telegrambots.meta.api.objects.ChatMemberUpdated;
-import org.telegram.telegrambots.meta.api.objects.Message;
-import org.telegram.telegrambots.meta.api.objects.Update;
+import org.telegram.telegrambots.meta.api.objects.*;
 import org.telegram.telegrambots.meta.api.objects.chatmember.ChatMember;
 
 @Service
@@ -20,6 +19,7 @@ public class DecisionCenter {
     private final CallbackProcessor callbackProcessor;
 
     private final ChatMemberStatus status;
+    private final BotConfig botConfig;
 
     public BotAction processUpdate(Update update) {
         if (update.hasMyChatMember()) {
@@ -50,16 +50,33 @@ public class DecisionCenter {
         return null;
     }
 
-
     private BotAction processMessage(Message message) {
         if (!message.hasText()) return null;
 
-        if (message.getChat().isGroupChat() || message.getChat().isSuperGroupChat()) {
+        Chat chat = message.getChat();
+        if (chat.isUserChat()) {
+            return commandProcessor.processUserCommand(message);
+        } else if (isGroupChat(chat) && isGroupCommand(message)) {
+            return commandProcessor.processGroupCommand(message);
+        } else if (isGroupChat(chat)) {
             return chatMessageProcessor.processMessage(message);
-        } else if (message.getChat().isUserChat()) {
-            return commandProcessor.processCommand(message);
         }
         return null;
+    }
+
+    private boolean isGroupChat(Chat chat) {
+        return chat.isGroupChat() || chat.isSuperGroupChat();
+    }
+
+    private boolean isGroupCommand(Message message) {
+        String commandBody = message.getText().trim();
+        for (CommandType groupCommand : CommandType.getGroupCommands()) {
+            String groupCommandBody = groupCommand.body;
+            if (commandBody.equals(groupCommandBody) || commandBody.equals(groupCommandBody + "@" + botConfig.getBotName())) {
+                return true;
+            }
+        }
+        return false;
     }
 
     private BotAction processCallback(CallbackQuery callback) {

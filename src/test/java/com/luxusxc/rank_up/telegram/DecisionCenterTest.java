@@ -1,9 +1,9 @@
 package com.luxusxc.rank_up.telegram;
 
+import com.luxusxc.rank_up.config.BotConfig;
 import org.junit.jupiter.api.Test;
 import org.telegram.telegrambots.meta.api.objects.*;
 import org.telegram.telegrambots.meta.api.objects.chatmember.ChatMemberAdministrator;
-import org.telegram.telegrambots.meta.api.objects.chatmember.ChatMemberBanned;
 import org.telegram.telegrambots.meta.api.objects.chatmember.ChatMemberLeft;
 import org.telegram.telegrambots.meta.api.objects.chatmember.ChatMemberMember;
 
@@ -27,7 +27,7 @@ public class DecisionCenterTest {
         this.chatMessageProcessor = mock();
         this.commandProcessor = mock();
         this.callbackProcessor = mock();
-        this.decisionCenter = new DecisionCenter(botJoinChatProcessor, botLeftChatProcessor, userLeftChatProcessor, chatMessageProcessor, commandProcessor, callbackProcessor, new ChatMemberStatus());
+        this.decisionCenter = new DecisionCenter(botJoinChatProcessor, botLeftChatProcessor, userLeftChatProcessor, chatMessageProcessor, commandProcessor, callbackProcessor, new ChatMemberStatus(), new BotConfig("CustomRankUpBot", "123"));
     }
 
     @Test
@@ -79,6 +79,30 @@ public class DecisionCenterTest {
     }
 
     @Test
+    void testProcessUpdateGroupCommand() {
+        Update update = new Update();
+        Message message = new Message();
+        message.setChat(new Chat(-1L, "group"));
+        message.setText("/stats");
+        update.setMessage(message);
+
+        decisionCenter.processUpdate(update);
+        verify(commandProcessor).processGroupCommand(any());
+    }
+
+    @Test
+    void testProcessUpdateGroupDirectCommand() {
+        Update update = new Update();
+        Message message = new Message();
+        message.setChat(new Chat(-1L, "group"));
+        message.setText("/stats@CustomRankUpBot");
+        update.setMessage(message);
+
+        decisionCenter.processUpdate(update);
+        verify(commandProcessor).processGroupCommand(any());
+    }
+
+    @Test
     void testProcessUpdateDirectMessage() {
         Update update = new Update();
         Message message = new Message();
@@ -87,7 +111,7 @@ public class DecisionCenterTest {
         update.setMessage(message);
 
         decisionCenter.processUpdate(update);
-        verify(commandProcessor).processCommand(any());
+        verify(commandProcessor).processUserCommand(any());
     }
 
     @Test

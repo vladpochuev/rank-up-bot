@@ -2,27 +2,50 @@ package com.luxusxc.rank_up.telegram.commands;
 
 import lombok.AllArgsConstructor;
 
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @AllArgsConstructor
 public enum CommandType {
-    START("/start", "Start using the bot"),
-    CHAT_LIST ( "/chatlist", "View the chats where you have any ranks");
+    START("/start", "Start using the bot", false),
+    CHAT_LIST("/chatlist", "View the chats where you have any ranks", false),
+    STATS("/stats", "Show group statistic", true);
 
     public final String body;
     public final String description;
-    private static final Map<String, CommandType> BODY_TO_COMMAND;
+    public final boolean isForGroup;
+
+    private static final Map<String, CommandType> BODY_TO_USER_COMMAND;
+    private static final Map<String, CommandType> BODY_TO_GROUP_COMMAND;
 
     static {
-        BODY_TO_COMMAND = new HashMap<>();
+        BODY_TO_USER_COMMAND = new HashMap<>();
+        BODY_TO_GROUP_COMMAND = new HashMap<>();
         for (CommandType command : values()) {
-            BODY_TO_COMMAND.put(command.body, command);
+            if (command.isForGroup) {
+                BODY_TO_GROUP_COMMAND.put(command.body, command);
+            } else {
+                BODY_TO_USER_COMMAND.put(command.body, command);
+            }
         }
     }
 
-    public static CommandType getInstance(String body) {
-        return BODY_TO_COMMAND.get(body);
+    public static CommandType getUserInstance(String body) {
+        return BODY_TO_USER_COMMAND.get(body);
+    }
+
+    public static CommandType getGroupInstance(String body) {
+        return BODY_TO_GROUP_COMMAND.get(body);
+    }
+
+    public static List<CommandType> getUserCommands() {
+        return Arrays.stream(values()).filter(c -> !c.isForGroup).toList();
+    }
+
+    public static List<CommandType> getGroupCommands() {
+        return Arrays.stream(values()).filter(c -> c.isForGroup).toList();
     }
 }
 

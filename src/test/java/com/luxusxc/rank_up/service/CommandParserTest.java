@@ -1,5 +1,6 @@
 package com.luxusxc.rank_up.service;
 
+import com.luxusxc.rank_up.config.BotConfig;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
@@ -10,7 +11,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 
 public class CommandParserTest {
-    private final CommandParser parser = new CommandParser(new StringSplitter());
+    private final CommandParser parser = new CommandParser(new StringSplitter(), new BotConfig("CustomRankUpBot", "123"));
     @Test
     void testCommonMessageBody() {
         assertThat(parser.getCommandBody("/send hello"), equalTo("/send"));
