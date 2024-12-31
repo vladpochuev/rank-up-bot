@@ -3,10 +3,8 @@ package com.luxusxc.rank_up.telegram.commands;
 import com.luxusxc.rank_up.telegram.TelegramBot;
 import org.telegram.telegrambots.meta.api.objects.Message;
 
-public class StartCommand extends Command {
-    private static final String WELCOME_MESSAGE_FORMAT = """
-            Hi, %s, nice to meet you!
-            
+public class HelpCommand extends Command {
+    private static final String HELP_MESSAGE = """
             This bot can be used to determine a group user's rank based on the number of messages they have sent.
             To start using the bot, add it to a group and promote it to admin.
             
@@ -19,13 +17,13 @@ public class StartCommand extends Command {
             /stats - show general group statistics
             """;
 
-    public StartCommand(TelegramBot bot) {
+    public HelpCommand(TelegramBot bot) {
         super(bot);
     }
 
+
+    @Override
     public void execute(Message message) {
-        String firstName = message.getFrom().getFirstName();
-        String response = WELCOME_MESSAGE_FORMAT.formatted(firstName);
-        bot.sendMessage(message.getChatId(), response, "HTML");
+        bot.sendMessage(message.getChatId(), HELP_MESSAGE, "HTML");
     }
 }

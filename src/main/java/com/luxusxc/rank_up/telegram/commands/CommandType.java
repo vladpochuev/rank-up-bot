@@ -10,8 +10,9 @@ import java.util.Map;
 @AllArgsConstructor
 public enum CommandType {
     START("/start", "Start using the bot", false),
-    CHAT_LIST("/chatlist", "View the chats where you have any ranks", false),
-    STATS("/stats", "Show group statistic", true);
+    HELP("/help", "Show the list of commands", false),
+    CHAT_LIST("/chatlist", "Show the list of chats with your statistics in them", false),
+    STATS("/stats", "Show general group statistics", true);
 
     public final String body;
     public final String description;
