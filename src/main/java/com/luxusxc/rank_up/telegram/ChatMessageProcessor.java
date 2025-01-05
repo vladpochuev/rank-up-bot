@@ -7,6 +7,9 @@ import com.luxusxc.rank_up.repository.UserRepository;
 import com.luxusxc.rank_up.service.RankUpConfigHandler;
 import com.luxusxc.rank_up.service.VariableReplacer;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Marker;
+import org.slf4j.MarkerFactory;
 import org.springframework.stereotype.Service;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.User;
@@ -15,7 +18,13 @@ import java.util.Optional;
 
 @Service
 @AllArgsConstructor
+@Slf4j
 public class ChatMessageProcessor {
+    private static final String MAX_LEVEL_LOG_TEMPLATE = "Tried to update user's level, but it has already reached the maximum (%s)";
+    private static final String LEVEL_UPDATED_LOG_TEMPLATE = "User's level was updated (%s)";
+    private static final String NEW_USER_LOG_TEMPLATE = "New user was created (%s)";
+    private static final Marker LOG_MARKER = MarkerFactory.getMarker(LogTags.BOT_SERVICE);
+
     private final UserRepository userRepository;
     private final RankRepository rankRepository;
     private final RankUpConfigHandler configHandler;
@@ -43,14 +52,19 @@ public class ChatMessageProcessor {
             RankEntity rank = rankRepository.findById(level).orElseThrow();
 
             if (experience >= rank.getExperience()) {
-                if (isMaxLevel(level)) return;
-                increaseLevel(userEntity);
+                if (isMaxLevel(level)) {
+                    log.info(LOG_MARKER, MAX_LEVEL_LOG_TEMPLATE.formatted(userEntity.getChatUserId()));
+                    return;
+                }
+
+                incrementLevel(userEntity);
                 announceLevelUpIfEnabled(userEntity, bot);
             } else {
                 userEntity.setExperience(experience + 1);
             }
 
             userRepository.save(userEntity);
+            log.info(LOG_MARKER, LEVEL_UPDATED_LOG_TEMPLATE.formatted(userEntity.getChatUserId()));
         };
     }
 
@@ -58,7 +72,7 @@ public class ChatMessageProcessor {
         return rankRepository.findById(level + 1).isEmpty();
     }
 
-    private void increaseLevel(UserEntity userEntity) {
+    private void incrementLevel(UserEntity userEntity) {
         Integer level = userEntity.getRankLevel();
         userEntity.setRankLevel(level + 1);
         userEntity.setExperience(1L);
@@ -83,6 +97,7 @@ public class ChatMessageProcessor {
         return bot -> {
             UserEntity userEntity = userMapper.toUserEntity(user, chatId);
             userRepository.save(userEntity);
+            log.info(LOG_MARKER, NEW_USER_LOG_TEMPLATE.formatted(userEntity.getChatUserId()));
         };
     }
 }

@@ -9,11 +9,14 @@ import com.luxusxc.rank_up.repository.RankRepository;
 import com.luxusxc.rank_up.repository.UserRepository;
 import com.luxusxc.rank_up.service.StatsMessageFormatter;
 import com.luxusxc.rank_up.telegram.TelegramBot;
+import lombok.extern.slf4j.Slf4j;
 import org.telegram.telegrambots.meta.api.objects.Message;
 
 import java.util.List;
 
+@Slf4j
 public class StatsCommand extends Command {
+    private static final String SUCCESS_LOG_TEMPLATE = "Chat statistics were sent to the group (id=%d)";
     private final StatsMessageFormatter messageFormatter;
     private final ChatRepository chatRepository;
     private final UserRepository userRepository;
@@ -28,11 +31,13 @@ public class StatsCommand extends Command {
     }
 
     @Override
-    public void execute(Message message) {
+    public void executeCommand(Message message) {
         long chatId = message.getChatId();
         StatsMessage statsMessage = buildStatsMessage(chatId);
         String formattedMessage = messageFormatter.getFormattedMessage(statsMessage);
+
         bot.sendMessage(chatId, formattedMessage, "HTML");
+        log.info(LOG_MARKER, SUCCESS_LOG_TEMPLATE.formatted(chatId));
     }
 
     private StatsMessage buildStatsMessage(long chatId) {

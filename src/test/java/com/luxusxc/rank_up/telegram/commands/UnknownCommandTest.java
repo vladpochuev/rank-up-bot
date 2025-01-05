@@ -22,6 +22,7 @@ public class UnknownCommandTest {
     @Test
     void testExecute() {
         Message message = new Message();
+        message.setText("/test");
         message.setChat(new Chat(123L, ""));
         unknownCommand.execute(message);
         verify(bot).sendMessage(message.getChatId(), "Sorry, command was not recognized.");

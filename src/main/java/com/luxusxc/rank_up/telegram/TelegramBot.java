@@ -2,14 +2,18 @@ package com.luxusxc.rank_up.telegram;
 
 import com.luxusxc.rank_up.config.BotConfig;
 import com.luxusxc.rank_up.model.BotAction;
+import com.luxusxc.rank_up.model.LogTags;
 import com.luxusxc.rank_up.repository.ChatRepository;
 import com.luxusxc.rank_up.repository.RankRepository;
 import com.luxusxc.rank_up.repository.UserRepository;
+import com.luxusxc.rank_up.service.CommandParser;
 import com.luxusxc.rank_up.service.StatsMessageFormatter;
 import com.luxusxc.rank_up.telegram.commands.CommandType;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Marker;
+import org.slf4j.MarkerFactory;
 import org.springframework.stereotype.Service;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.api.methods.commands.SetMyCommands;
@@ -29,21 +33,28 @@ import java.util.List;
 @Slf4j
 @Service
 public class TelegramBot extends TelegramLongPollingBot {
+    private static final String MESSAGE_SENT_LOG_TEMPLATE = "Message was sent to the chat (id=%s)";
+    private static final Marker LOG_MARKER = MarkerFactory.getMarker(LogTags.BOT_SERVICE);
+
     private final BotConfig config;
     private final StatsMessageFormatter statsMessageFormatter;
     private final DecisionCenter decisionCenter;
     private final InlineKeyboardConstructor keyboardConstructor;
+    private final CommandParser commandParser;
 
     private final ChatRepository chatRepository;
     private final UserRepository userRepository;
     private final RankRepository rankRepository;
 
-    public TelegramBot(BotConfig config, StatsMessageFormatter statsMessageFormatter, DecisionCenter decisionCenter, InlineKeyboardConstructor keyboardConstructor, ChatRepository chatRepository, UserRepository userRepository, RankRepository rankRepository) {
+    public TelegramBot(BotConfig config, StatsMessageFormatter statsMessageFormatter, DecisionCenter decisionCenter,
+                       InlineKeyboardConstructor keyboardConstructor, CommandParser commandParser, ChatRepository chatRepository,
+                       UserRepository userRepository, RankRepository rankRepository) {
         super(config.getToken());
         this.config = config;
         this.statsMessageFormatter = statsMessageFormatter;
         this.decisionCenter = decisionCenter;
         this.keyboardConstructor = keyboardConstructor;
+        this.commandParser = commandParser;
         this.chatRepository = chatRepository;
         this.userRepository = userRepository;
         this.rankRepository = rankRepository;
@@ -100,6 +111,7 @@ public class TelegramBot extends TelegramLongPollingBot {
     public void sendMessage(SendMessage message) {
         try {
             execute(message);
+            log.info(LOG_MARKER, MESSAGE_SENT_LOG_TEMPLATE.formatted(message.getChatId()));
         } catch (TelegramApiException e) {
             log.error("Error occurred: " + e.getMessage());
         }
@@ -108,6 +120,7 @@ public class TelegramBot extends TelegramLongPollingBot {
     public void sendMessage(EditMessageText message) {
         try {
             execute(message);
+            log.info(LOG_MARKER, MESSAGE_SENT_LOG_TEMPLATE.formatted(message.getChatId()));
         } catch (TelegramApiException e) {
             log.error("Error occurred: " + e.getMessage());
         }

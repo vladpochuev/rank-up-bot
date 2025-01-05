@@ -5,13 +5,24 @@ import com.luxusxc.rank_up.model.*;
 import com.luxusxc.rank_up.repository.DefaultRankRepository;
 import com.luxusxc.rank_up.repository.RankRepository;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Marker;
+import org.slf4j.MarkerFactory;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 @Service
 @AllArgsConstructor
+@Slf4j
 public class WebRankUpConfigurer {
+    private static final Marker LOG_MARKER = MarkerFactory.getMarker(LogTags.CONFIG);
+    private static final String CREATED_LOG = "Created new config from web form";
+    private static final String START_SAVE_LOG = "Started saving the settings to the database";
+    private static final String SUCCESS_SAVE_LOG = "New settings was saved to the database";
+    private static final String CONVERTED_TO_WEB_CONFIG_LOG = "Config was successfully received and converted to the web config";
+    private static final String DATABASE_DATA_MAPPED_LOG = "Database data was successfully received and mapped to the web config";
+
     private final RankRepository rankRepository;
     private final DefaultRankRepository defaultRankRepository;
     private final RankEntityFactory rankFactory;
@@ -29,14 +40,17 @@ public class WebRankUpConfigurer {
 
     private void serializeConfig(WebRankUpConfig webConfig) {
         configHandler.fillFromWebConfig(webConfig);
+        log.info(LOG_MARKER, CREATED_LOG);
         configHandler.importConfig();
     }
 
     private void saveRanks(WebRankUpConfig webConfig) {
+        log.info(LOG_MARKER, START_SAVE_LOG);
         List<DefaultRankEntity> defaultRanks = (List<DefaultRankEntity>) defaultRankRepository.findAll();
         List<RankEntity> rankEntities = rankFactory.mapDefaultRanksToRegular(defaultRanks);
         importAllFrom(webConfig, rankEntities);
         save(rankEntities);
+        log.info(LOG_MARKER, SUCCESS_SAVE_LOG);
     }
 
     private void importAllFrom(WebRankUpConfig webConfig, List<RankEntity> rankEntities) {
@@ -54,7 +68,9 @@ public class WebRankUpConfigurer {
     public WebRankUpConfig exportWebConfig() {
         RankUpConfig config = configHandler.getConfig();
         WebRankUpConfig webConfig = configMapper.toWebRankUpConfig(config);
+        log.info(LOG_MARKER, CONVERTED_TO_WEB_CONFIG_LOG);
         exportAllTo(webConfig);
+        log.info(LOG_MARKER, DATABASE_DATA_MAPPED_LOG);
         return webConfig;
     }
 

@@ -14,4 +14,9 @@ import java.io.Serializable;
 public class ChatUserId implements Serializable {
     private long chatId;
     private long userId;
+
+    @Override
+    public String toString() {
+        return "chatId=" + chatId + ", userId=" + userId;
+    }
 }

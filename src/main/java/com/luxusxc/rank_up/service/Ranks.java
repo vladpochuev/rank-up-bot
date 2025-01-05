@@ -4,13 +4,22 @@ import com.luxusxc.rank_up.model.*;
 import com.luxusxc.rank_up.repository.DefaultRankRepository;
 import com.luxusxc.rank_up.repository.RankRepository;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Marker;
+import org.slf4j.MarkerFactory;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 @Service
 @AllArgsConstructor
+@Slf4j
 public class Ranks {
+    private static final String FILL_CUSTOM_LOG = "Ranks were replaced with custom ones";
+    private static final String FILL_DEFAULT_LOG = "Ranks were replaced with default ones";
+    private static final String EXPORTED_LOG = "Ranks were successfully exported";
+    private static final Marker LOG_MARKER = MarkerFactory.getMarker(LogTags.CONFIG);
+
     private final RankRepository repository;
     private final DefaultRankRepository defaultRepository;
     private final StringSplitter stringSplitter;
@@ -32,6 +41,7 @@ public class Ranks {
         for (int i = 0; i < rankEntities.size(); i++) {
             rankEntities.get(i).setName(rankNames.get(i));
         }
+        log.info(LOG_MARKER, FILL_CUSTOM_LOG);
     }
 
     private void fillFromDefaultRanks(List<RankEntity> rankEntities) {
@@ -40,6 +50,7 @@ public class Ranks {
             rankEntities.get(i).setName(defaultRankEntities.get(i).getName());
             rankEntities.get(i).setLevel(defaultRankEntities.get(i).getLevel());
         }
+        log.info(LOG_MARKER, FILL_DEFAULT_LOG);
     }
 
     private List<RankEntity> getRankEntitiesFromDefault() {
@@ -50,6 +61,7 @@ public class Ranks {
     public String exportRanks() {
         List<RankEntity> ranks = (List<RankEntity>) repository.findAll();
         List<String> rankNames = getRankNames(ranks);
+        log.info(LOG_MARKER, EXPORTED_LOG);
         return stringJoiner.join(rankNames, DELIMITER);
     }
 
