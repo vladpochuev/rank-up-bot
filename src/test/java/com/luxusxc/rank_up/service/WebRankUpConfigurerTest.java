@@ -1,5 +1,6 @@
 package com.luxusxc.rank_up.service;
 
+import com.luxusxc.rank_up.mapper.DefaultRankEntityMapper;
 import com.luxusxc.rank_up.mapper.RankUpConfigMapper;
 import com.luxusxc.rank_up.model.*;
 import com.luxusxc.rank_up.repository.DefaultRankRepository;
@@ -32,13 +33,12 @@ public class WebRankUpConfigurerTest {
 
         StringSplitter splitter = new StringSplitter();
         StringJoiner joiner = new StringJoiner();
-        RankEntityFactory rankFactory = new RankEntityFactory();
 
-        Ranks ranks = new Ranks(rankRepository, defaultRankRepository, splitter, joiner, rankFactory);
+        Ranks ranks = new Ranks(rankRepository, defaultRankRepository, splitter, joiner);
         Levels levels = new Levels(rankRepository, defaultRankRepository, splitter, joiner);
         Images images = new Images(imageRepository, splitter, joiner);
         LevelUpMessages messages = new LevelUpMessages(new VariableReplacer());
-        configurer = new WebRankUpConfigurer(rankRepository, defaultRankRepository, rankFactory, ranks, levels, images, messages, configHandler, RankUpConfigMapper.INSTANCE);
+        configurer = new WebRankUpConfigurer(rankRepository, defaultRankRepository, DefaultRankEntityMapper.INSTANCE, ranks, levels, images, messages, configHandler, RankUpConfigMapper.INSTANCE);
     }
 
     @BeforeEach

@@ -24,7 +24,7 @@ public class RanksTest {
     public RanksTest() {
         repository = mock();
         defaultRepository = mock();
-        this.ranks = new Ranks(repository, defaultRepository, new StringSplitter(), new StringJoiner(), new RankEntityFactory());
+        this.ranks = new Ranks(repository, defaultRepository, new StringSplitter(), new StringJoiner());
     }
 
     @Test

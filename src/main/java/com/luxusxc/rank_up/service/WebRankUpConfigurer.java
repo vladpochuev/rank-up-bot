@@ -1,5 +1,6 @@
 package com.luxusxc.rank_up.service;
 
+import com.luxusxc.rank_up.mapper.DefaultRankEntityMapper;
 import com.luxusxc.rank_up.mapper.RankUpConfigMapper;
 import com.luxusxc.rank_up.model.*;
 import com.luxusxc.rank_up.repository.DefaultRankRepository;
@@ -25,7 +26,7 @@ public class WebRankUpConfigurer {
 
     private final RankRepository rankRepository;
     private final DefaultRankRepository defaultRankRepository;
-    private final RankEntityFactory rankFactory;
+    private final DefaultRankEntityMapper defaultRankEntityMapper;
     private final Ranks ranks;
     private final Levels levels;
     private final Images images;
@@ -46,11 +47,17 @@ public class WebRankUpConfigurer {
 
     private void saveRanks(WebRankUpConfig webConfig) {
         log.info(LOG_MARKER, START_SAVE_LOG);
-        List<DefaultRankEntity> defaultRanks = (List<DefaultRankEntity>) defaultRankRepository.findAll();
-        List<RankEntity> rankEntities = rankFactory.mapDefaultRanksToRegular(defaultRanks);
+        List<DefaultRankEntity> defaultRankEntities = (List<DefaultRankEntity>) defaultRankRepository.findAll();
+        List<RankEntity> rankEntities = getRankEntitiesFromDefault(defaultRankEntities);
         importAllFrom(webConfig, rankEntities);
         save(rankEntities);
         log.info(LOG_MARKER, SUCCESS_SAVE_LOG);
+    }
+
+    private List<RankEntity> getRankEntitiesFromDefault(List<DefaultRankEntity> defaultRankEntities) {
+        return defaultRankEntities.stream()
+                .map(defaultRankEntityMapper::toRankEntity)
+                .toList();
     }
 
     private void importAllFrom(WebRankUpConfig webConfig, List<RankEntity> rankEntities) {

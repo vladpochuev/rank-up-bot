@@ -1,6 +1,9 @@
 package com.luxusxc.rank_up.service;
 
-import com.luxusxc.rank_up.model.*;
+import com.luxusxc.rank_up.model.DefaultRankEntity;
+import com.luxusxc.rank_up.model.LogTags;
+import com.luxusxc.rank_up.model.RankEntity;
+import com.luxusxc.rank_up.model.WebRankUpConfig;
 import com.luxusxc.rank_up.repository.DefaultRankRepository;
 import com.luxusxc.rank_up.repository.RankRepository;
 import lombok.AllArgsConstructor;
@@ -24,7 +27,7 @@ public class Ranks {
     private final DefaultRankRepository defaultRepository;
     private final StringSplitter stringSplitter;
     private final StringJoiner stringJoiner;
-    private final RankEntityFactory rankFactory;
+
     private static final String DELIMITER = "\n";
 
     public void fillRanks(WebRankUpConfig webConfig, List<RankEntity> rankEntities) {
@@ -45,17 +48,12 @@ public class Ranks {
     }
 
     private void fillFromDefaultRanks(List<RankEntity> rankEntities) {
-        List<RankEntity> defaultRankEntities = getRankEntitiesFromDefault();
+        List<DefaultRankEntity> defaultRankEntities = (List<DefaultRankEntity>) defaultRepository.findAll();
         for (int i = 0; i < rankEntities.size(); i++) {
             rankEntities.get(i).setName(defaultRankEntities.get(i).getName());
             rankEntities.get(i).setLevel(defaultRankEntities.get(i).getLevel());
         }
         log.info(LOG_MARKER, FILL_DEFAULT_LOG);
-    }
-
-    private List<RankEntity> getRankEntitiesFromDefault() {
-        List<DefaultRankEntity> defaultRanks = (List<DefaultRankEntity>) defaultRepository.findAll();
-        return rankFactory.mapDefaultRanksToRegular(defaultRanks);
     }
 
     public String exportRanks() {
