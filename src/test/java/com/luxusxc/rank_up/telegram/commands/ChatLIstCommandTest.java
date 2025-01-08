@@ -45,7 +45,7 @@ public class ChatLIstCommandTest {
     @Test
     void testNoChats() {
         Message message = new Message();
-        message.setChat(new Chat(-1L, "group"));
+        message.setChat(new Chat(1L, "private"));
         message.setFrom(new User(1L, "", false));
         chatListCommand.execute(message);
         verify(bot).sendMessage(message.getChatId(), "You have no rank in any chat.");

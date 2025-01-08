@@ -17,6 +17,12 @@ public class CallbackParser {
         return splitMessage.get(0);
     }
 
+    public List<String> getArgs(String message) {
+        List<String> splitMessage = splitter.split(message, DELIMITER);
+        throwIfEmpty(splitMessage);
+        return splitMessage.subList(1, splitMessage.size());
+    }
+
     private void throwIfEmpty(List<String> messages) {
         if (messages.equals(List.of())) {
             throw new IllegalArgumentException("Provided message is empty");

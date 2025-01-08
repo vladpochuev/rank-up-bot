@@ -1,11 +1,13 @@
 package com.luxusxc.rank_up.telegram;
 
 import com.luxusxc.rank_up.config.BotConfig;
+import com.luxusxc.rank_up.mapper.CallbackQueryMapper;
 import com.luxusxc.rank_up.model.BotAction;
 import com.luxusxc.rank_up.model.LogTags;
 import com.luxusxc.rank_up.repository.ChatRepository;
 import com.luxusxc.rank_up.repository.RankRepository;
 import com.luxusxc.rank_up.repository.UserRepository;
+import com.luxusxc.rank_up.service.CallbackParser;
 import com.luxusxc.rank_up.service.CommandParser;
 import com.luxusxc.rank_up.service.StatsMessageFormatter;
 import com.luxusxc.rank_up.telegram.commands.CommandType;
@@ -18,6 +20,7 @@ import org.springframework.stereotype.Service;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.api.methods.commands.SetMyCommands;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
+import org.telegram.telegrambots.meta.api.methods.updatingmessages.DeleteMessage;
 import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageText;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.api.objects.commands.BotCommand;
@@ -34,6 +37,11 @@ import java.util.List;
 @Service
 public class TelegramBot extends TelegramLongPollingBot {
     private static final String MESSAGE_SENT_LOG_TEMPLATE = "Message was sent to the chat (id=%s)";
+    private static final String MESSAGE_DELETED_LOG_TEMPLATE = "Message was deleted from the chat (id=%s)";
+    private static final String ERROR_SENDING_LOG_TEMPLATE = "Error occurred while sending the message: %s";
+    private static final String ERROR_DELETING_LOG_TEMPLATE = "Error occurred while deleting the message: %s";
+    private static final String ERROR_BOT_COMMANDS_LOG_TEMPLATE = "Error setting bot`s command list: %s";
+
     private static final Marker LOG_MARKER = MarkerFactory.getMarker(LogTags.BOT_SERVICE);
 
     private final BotConfig config;
@@ -41,20 +49,25 @@ public class TelegramBot extends TelegramLongPollingBot {
     private final DecisionCenter decisionCenter;
     private final InlineKeyboardConstructor keyboardConstructor;
     private final CommandParser commandParser;
+    private final CallbackParser callbackParser;
+    private final CallbackQueryMapper callbackQueryMapper;
 
     private final ChatRepository chatRepository;
     private final UserRepository userRepository;
     private final RankRepository rankRepository;
 
     public TelegramBot(BotConfig config, StatsMessageFormatter statsMessageFormatter, DecisionCenter decisionCenter,
-                       InlineKeyboardConstructor keyboardConstructor, CommandParser commandParser, ChatRepository chatRepository,
-                       UserRepository userRepository, RankRepository rankRepository) {
+                       InlineKeyboardConstructor keyboardConstructor, CommandParser commandParser,
+                       CallbackParser callbackParser, CallbackQueryMapper callbackQueryMapper,
+                       ChatRepository chatRepository, UserRepository userRepository, RankRepository rankRepository) {
         super(config.getToken());
         this.config = config;
         this.statsMessageFormatter = statsMessageFormatter;
         this.decisionCenter = decisionCenter;
         this.keyboardConstructor = keyboardConstructor;
         this.commandParser = commandParser;
+        this.callbackParser = callbackParser;
+        this.callbackQueryMapper = callbackQueryMapper;
         this.chatRepository = chatRepository;
         this.userRepository = userRepository;
         this.rankRepository = rankRepository;
@@ -76,7 +89,7 @@ public class TelegramBot extends TelegramLongPollingBot {
             execute(new SetMyCommands(userCommands, new BotCommandScopeDefault(), null));
             execute(new SetMyCommands(groupCommands, new BotCommandScopeAllGroupChats(), null));
         } catch (TelegramApiException e) {
-            log.error("Error setting bot`s command list " + e.getMessage());
+            log.error(LOG_MARKER, ERROR_BOT_COMMANDS_LOG_TEMPLATE.formatted(e.getMessage()));
         }
     }
 
@@ -113,7 +126,7 @@ public class TelegramBot extends TelegramLongPollingBot {
             execute(message);
             log.info(LOG_MARKER, MESSAGE_SENT_LOG_TEMPLATE.formatted(message.getChatId()));
         } catch (TelegramApiException e) {
-            log.error("Error occurred: " + e.getMessage());
+            log.error(LOG_MARKER, ERROR_SENDING_LOG_TEMPLATE.formatted(e.getMessage()));
         }
     }
 
@@ -122,7 +135,23 @@ public class TelegramBot extends TelegramLongPollingBot {
             execute(message);
             log.info(LOG_MARKER, MESSAGE_SENT_LOG_TEMPLATE.formatted(message.getChatId()));
         } catch (TelegramApiException e) {
-            log.error("Error occurred: " + e.getMessage());
+            log.error(LOG_MARKER, ERROR_SENDING_LOG_TEMPLATE.formatted(e.getMessage()));
+        }
+    }
+
+    public void deleteMessage(long chatId, int messageId) {
+        DeleteMessage message = new DeleteMessage();
+        message.setChatId(chatId);
+        message.setMessageId(messageId);
+        deleteMessage(message);
+    }
+
+    public void deleteMessage(DeleteMessage message) {
+        try {
+            execute(message);
+            log.info(LOG_MARKER, MESSAGE_DELETED_LOG_TEMPLATE.formatted(message.getChatId()));
+        } catch (TelegramApiException e) {
+            log.error(LOG_MARKER, ERROR_DELETING_LOG_TEMPLATE.formatted(e.getMessage()));
         }
     }
 

@@ -20,7 +20,6 @@ public class ChatListCommand extends Command {
     private static final String MESSAGE_TEXT = "Choose the chat.";
     private static final String NO_CHATS_TEXT = "You have no rank in any chat.";
     private static final String CALLBACK_PREFIX = "CHAT_";
-    private static final String LOG_TEMPLATE = "Chatlist command was called (id=%d)";
     private static final String NO_CHATS_LOG_TEMPLATE = "User has no active chats (id=%d)";
     private static final String SUCCESS_LOG_TEMPLATE = "User has received the chat list (id=%d)";
 
@@ -31,15 +30,13 @@ public class ChatListCommand extends Command {
     @Override
     public void executeCommand(Message message) {
         long userId = message.getFrom().getId();
-        long chatId = message.getChatId();
 
-        log.info(LOG_MARKER, LOG_TEMPLATE.formatted(chatId));
         List<UserEntity> userProfiles = getUserProfiles(userId);
         if (userProfiles.isEmpty()) {
-            sendNoChatMessage(chatId);
+            sendNoChatMessage(userId);
         } else {
             List<ChatEntity> userChats = getUserChats(userProfiles);
-            sendUserChats(chatId, userChats);
+            sendUserChats(userId, userChats);
         }
     }
 
