@@ -5,7 +5,6 @@ import com.luxusxc.rank_up.model.*;
 import com.luxusxc.rank_up.repository.RankRepository;
 import com.luxusxc.rank_up.repository.UserRepository;
 import com.luxusxc.rank_up.service.RankUpConfigHandler;
-import com.luxusxc.rank_up.service.VariableReplacer;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Marker;
@@ -28,8 +27,8 @@ public class ChatMessageProcessor {
     private final UserRepository userRepository;
     private final RankRepository rankRepository;
     private final RankUpConfigHandler configHandler;
-    private final VariableReplacer variableReplacer;
     private final UserMapper userMapper;
+    private final LevelUpAnnouncer levelUpAnnouncer;
 
     public BotAction processMessage(Message message) {
         Long chatId = message.getChatId();
@@ -81,16 +80,8 @@ public class ChatMessageProcessor {
     private void announceLevelUpIfEnabled(UserEntity userEntity, TelegramBot bot) {
         RankUpConfig config = configHandler.getConfig();
         if (config.isAnnounceLevelUp()) {
-            announceLevelUp(bot, userEntity);
+            levelUpAnnouncer.announce(bot, userEntity);
         }
-    }
-
-    private void announceLevelUp(TelegramBot bot, UserEntity userEntity) {
-        RankEntity newRank = rankRepository.findById(userEntity.getRankLevel()).orElseThrow();
-        String message = newRank.getLevelUpMessage();
-        String userMessage = variableReplacer.replaceUserVars(message, userEntity);
-        long chatId = userEntity.getChatUserId().getChatId();
-        bot.sendMessage(chatId, userMessage);
     }
 
     private BotAction createNewUser(User user, Long chatId) {

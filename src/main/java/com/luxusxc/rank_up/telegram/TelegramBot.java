@@ -19,13 +19,16 @@ import org.slf4j.MarkerFactory;
 import org.springframework.stereotype.Service;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.api.methods.commands.SetMyCommands;
+import org.telegram.telegrambots.meta.api.methods.send.SendMediaGroup;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
+import org.telegram.telegrambots.meta.api.methods.send.SendPhoto;
 import org.telegram.telegrambots.meta.api.methods.updatingmessages.DeleteMessage;
 import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageText;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.api.objects.commands.BotCommand;
 import org.telegram.telegrambots.meta.api.objects.commands.scope.BotCommandScopeAllGroupChats;
 import org.telegram.telegrambots.meta.api.objects.commands.scope.BotCommandScopeDefault;
+import org.telegram.telegrambots.meta.api.objects.media.InputMediaPhoto;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
 import java.util.ArrayList;
@@ -134,6 +137,24 @@ public class TelegramBot extends TelegramLongPollingBot {
         try {
             execute(message);
             log.info(LOG_MARKER, MESSAGE_SENT_LOG_TEMPLATE.formatted(message.getChatId()));
+        } catch (TelegramApiException e) {
+            log.error(LOG_MARKER, ERROR_SENDING_LOG_TEMPLATE.formatted(e.getMessage()));
+        }
+    }
+
+    public void sendPhoto(SendPhoto photo) {
+        try {
+            execute(photo);
+            log.info(LOG_MARKER, MESSAGE_SENT_LOG_TEMPLATE.formatted(photo.getChatId()));
+        } catch (TelegramApiException e) {
+            log.error(LOG_MARKER, ERROR_SENDING_LOG_TEMPLATE.formatted(e.getMessage()));
+        }
+    }
+
+    public void sendMediaGroup(SendMediaGroup mediaGroup) {
+        try {
+            execute(mediaGroup);
+            log.info(LOG_MARKER, MESSAGE_SENT_LOG_TEMPLATE.formatted(mediaGroup.getChatId()));
         } catch (TelegramApiException e) {
             log.error(LOG_MARKER, ERROR_SENDING_LOG_TEMPLATE.formatted(e.getMessage()));
         }

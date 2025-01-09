@@ -35,7 +35,9 @@ public class ChatMessageProcessorTest {
         rankRepository = mock();
         bot = mock();
         configHandler = mock();
-        chatMessageProcessor = new ChatMessageProcessor(userRepository, rankRepository, configHandler, new VariableReplacer(), UserMapper.INSTANCE);
+
+        LevelUpAnnouncer announcer = new LevelUpAnnouncer(rankRepository, new VariableReplacer(), mock());
+        chatMessageProcessor = new ChatMessageProcessor(userRepository, rankRepository, configHandler, UserMapper.INSTANCE, announcer);
     }
 
     @BeforeEach
