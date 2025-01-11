@@ -26,8 +26,8 @@ import java.util.List;
 @Slf4j
 public class LevelUpAnnouncer {
     private static final String SEND_TEXT_LOG_TEMPLATE = "The new level congratulation was sent to the group (%s)";
-    private static final String SEND_IMAGE_LOG_TEMPLATE = "The new level congratulation with image attach was sent to the group (%s)";
-    private static final String SEND_IMAGE_GROUP_LOG_TEMPLATE = "The new level congratulation with several images attach was sent to the group (%s)";
+    private static final String SEND_IMAGE_LOG_TEMPLATE = "The new level congratulation with an attached image was sent to the group (%s)";
+    private static final String SEND_IMAGE_GROUP_LOG_TEMPLATE = "The new level congratulation with several attached images was sent to the group (%s)";
     private static final Marker LOG_MARKER = MarkerFactory.getMarker(LogTags.BOT_SERVICE);
 
     private final RankRepository rankRepository;

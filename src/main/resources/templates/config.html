@@ -11,35 +11,39 @@
 </head>
 <body>
 
-<form method="POST" th:action="@{/}" th:object="${webConfig}">
+<form id="form" method="POST" th:action="@{/}" th:object="${webConfig}">
     <div class="check">
         <input class="enableAll" type="checkbox" th:checked="${webConfig.enableAll}" th:field="*{enableAll}">
         <span class="check_title">Enable levels &amp; XP</span>
     </div>
 
+    <p id="quantity_error" class="inner_block error">Invalid format. The number of levels must be equal to the number of ranks</p>
+
     <div id="levels" class="inner_block">
         <div class="check">
-            <input class="levels" type="checkbox" th:checked="${webConfig.enableCustomLevels}" th:field="*{enableCustomLevels}">
+            <input id="custom_levels_checkbox" class="levels" type="checkbox" th:checked="${webConfig.enableCustomLevels}" th:field="*{enableCustomLevels}">
             <span class="check_title">Enable custom levels</span>
         </div>
 
         <div class="text_block">
             <label class="title" for="levels_textarea">Custom levels</label>
+            <p id="levels_error" class="error">Invalid format. Levels must be a sequence of numbers separated by commas</p>
             <textarea class="levels" id="levels_textarea" th:field="*{customLevels}" th:disabled="${!webConfig.enableCustomLevels}"></textarea>
-            <div class="tip">Enter numbers separated by a comma. Each number is how many XP do you need for the next level.</div>
+            <div class="tip">Enter numbers separated by commas. Each number is how many XP do you need for the next level.</div>
         </div>
     </div>
 
     <div id="ranks" class="inner_block">
         <div class="check">
-            <input class="ranks" type="checkbox" th:checked="${webConfig.enableCustomRanks}" th:field="*{enableCustomRanks}">
+            <input id="custom_ranks_checkbox" class="ranks" type="checkbox" th:checked="${webConfig.enableCustomRanks}" th:field="*{enableCustomRanks}">
             <span class="check_title">Enable custom ranks</span>
         </div>
 
         <div class="text_block">
             <label class="title" for="ranks_textarea">Ranks</label>
+            <p id="ranks_error" class="error">Invalid format. Ranks must be a sequence of phrases separated by line breaks</p>
             <textarea class="ranks" id="ranks_textarea" th:field="*{customRanks}" th:disabled="${!webConfig.enableCustomRanks}"></textarea>
-            <div class="tip">Enter ranks separated by a line break. From the lowest rank to the highest one. Each line is a
+            <div class="tip">Enter ranks separated by a line breaks. From the lowest rank to the highest one. Each line is a
                 new level, the first line is level 1.
             </div>
         </div>
@@ -58,18 +62,20 @@
         </div>
 
         <div class="text_block">
-            <label class="title" for="level_up_image_textarea">Attach image(s)</label>
-            <textarea id="level_up_image_textarea" th:field="*{attachedImagesUrl}"></textarea>
+            <label class="title" for="images_textarea">Attach image(s)</label>
+            <p id="images_error" class="error">Invalid format. Images must be a set of links separated by line breaks</p>
+            <textarea id="images_textarea" th:field="*{attachedImagesUrl}"></textarea>
             <div class="tip">Separate multiple images by a line break. If you have more than one image, selection will be
                 random. You can use the same variables to generate dynamic images.
             </div>
         </div>
     </div>
 
-    <button type="submit">Save</button>
+    <button type="button" onclick="send()">Save</button>
 </form>
 
 <script th:src="@{/js/config.js}"></script>
+<script th:src="@{/js/validation.js}"></script>
 
 </body>
 </html>
