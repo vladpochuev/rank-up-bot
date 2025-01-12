@@ -9,17 +9,14 @@ import com.luxusxc.rank_up.repository.RankRepository;
 import com.luxusxc.rank_up.service.VariableReplacer;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
-import org.telegram.telegrambots.meta.api.methods.send.SendMediaGroup;
 import org.telegram.telegrambots.meta.api.methods.send.SendPhoto;
-import org.telegram.telegrambots.meta.api.objects.media.InputMedia;
-import org.telegram.telegrambots.meta.api.objects.media.InputMediaPhoto;
 
 import java.util.List;
 import java.util.Optional;
 
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.anyOf;
 import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.nullValue;
 import static org.mockito.Mockito.*;
 
 class LevelUpAnnouncerTest {
@@ -73,20 +70,12 @@ class LevelUpAnnouncerTest {
         when(imageRepository.findAll()).thenReturn(List.of(imageEntity1, imageEntity2));
         announcer.announce(bot, user);
 
-        ArgumentCaptor<SendMediaGroup> argumentCaptor = ArgumentCaptor.forClass(SendMediaGroup.class);
-        verify(bot, times(1)).sendMediaGroup(argumentCaptor.capture());
-        SendMediaGroup sendMediaGroup = argumentCaptor.getValue();
+        ArgumentCaptor<SendPhoto> argumentCaptor = ArgumentCaptor.forClass(SendPhoto.class);
+        verify(bot, times(1)).sendPhoto(argumentCaptor.capture());
+        SendPhoto photo = argumentCaptor.getValue();
 
-        assertThat(sendMediaGroup.getChatId(), equalTo("-1"));
-        List<InputMedia> mediaPhotos = sendMediaGroup.getMedias();
-
-        InputMediaPhoto photo1 = (InputMediaPhoto) mediaPhotos.get(0);
-        InputMediaPhoto photo2 = (InputMediaPhoto) mediaPhotos.get(1);
-
-        assertThat(photo1.getCaption(), equalTo("Congratulations!"));
-        assertThat(photo2.getCaption(), nullValue());
-
-        assertThat(photo1.getMedia(), equalTo(imageEntity1.getImageUrl()));
-        assertThat(photo2.getMedia(), equalTo(imageEntity2.getImageUrl()));
+        assertThat(photo.getChatId(), equalTo("-1"));
+        assertThat(photo.getCaption(), equalTo("Congratulations!"));
+        assertThat(photo.getPhoto().getAttachName(), anyOf(equalTo(imageEntity1.getImageUrl()), equalTo(imageEntity2.getImageUrl())));
     }
 }

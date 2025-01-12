@@ -14,7 +14,7 @@ import java.util.List;
 @Service
 @Slf4j
 public class Images {
-    private static final String IMAGES_REMOVED_LOG = "Old images was removed";
+    private static final String IMAGES_REMOVED_LOG = "Old images were removed";
     private static final String IMAGES_SAVED_LOG = "New images was saved";
     private static final String EXPORT_LOG = "Images were successfully exported";
     private static final Marker LOG_MARKER = MarkerFactory.getMarker(LogTags.CONFIG);
