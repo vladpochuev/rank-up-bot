@@ -1,5 +1,6 @@
 package com.luxusxc.rank_up.service;
 
+import com.luxusxc.rank_up.mapper.DefaultRankEntityMapper;
 import com.luxusxc.rank_up.model.DefaultRankEntity;
 import com.luxusxc.rank_up.model.LogTags;
 import com.luxusxc.rank_up.model.RankEntity;
@@ -20,13 +21,15 @@ import java.util.List;
 public class Ranks {
     private static final String FILL_CUSTOM_LOG = "Ranks were replaced with custom ones";
     private static final String FILL_DEFAULT_LOG = "Ranks were replaced with default ones";
-    private static final String EXPORTED_LOG = "Ranks were successfully exported";
+    private static final String CUSTOM_EXPORTED_LOG = "Custom ranks were successfully exported";
+    private static final String DEFAULT_EXPORTED_LOG = "Default ranks were successfully exported";
     private static final Marker LOG_MARKER = MarkerFactory.getMarker(LogTags.CONFIG);
 
     private final RankRepository repository;
     private final DefaultRankRepository defaultRepository;
     private final StringSplitter stringSplitter;
     private final StringJoiner stringJoiner;
+    private final DefaultRankEntityMapper defaultRankMapper;
 
     private static final String DELIMITER = "\n";
 
@@ -39,7 +42,7 @@ public class Ranks {
     }
 
     private void fillWithCustomRanks(List<RankEntity> rankEntities, String ranks) {
-        List<String> rankNames = stringSplitter.split(ranks, DELIMITER);
+            List<String> rankNames = stringSplitter.split(ranks, DELIMITER);
         if (rankNames.equals(List.of())) throw new IllegalArgumentException();
         for (int i = 0; i < rankEntities.size(); i++) {
             rankEntities.get(i).setName(rankNames.get(i));
@@ -56,10 +59,18 @@ public class Ranks {
         log.info(LOG_MARKER, FILL_DEFAULT_LOG);
     }
 
-    public String exportRanks() {
+    public String exportCustomRanks() {
         List<RankEntity> ranks = (List<RankEntity>) repository.findAll();
         List<String> rankNames = getRankNames(ranks);
-        log.info(LOG_MARKER, EXPORTED_LOG);
+        log.info(LOG_MARKER, CUSTOM_EXPORTED_LOG);
+        return stringJoiner.join(rankNames, DELIMITER);
+    }
+
+    public String exportDefaultRanks() {
+        List<DefaultRankEntity> defaultRanks = (List<DefaultRankEntity>) defaultRepository.findAll();
+        List<RankEntity> ranks = defaultRanks.stream().map(defaultRankMapper::toRankEntity).toList();
+        List<String> rankNames = getRankNames(ranks);
+        log.info(LOG_MARKER, DEFAULT_EXPORTED_LOG);
         return stringJoiner.join(rankNames, DELIMITER);
     }
 

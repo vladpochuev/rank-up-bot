@@ -1,6 +1,5 @@
 package com.luxusxc.rank_up.service;
 
-import com.luxusxc.rank_up.mapper.DefaultRankEntityMapper;
 import com.luxusxc.rank_up.mapper.RankUpConfigMapper;
 import com.luxusxc.rank_up.model.*;
 import com.luxusxc.rank_up.repository.DefaultRankRepository;
@@ -11,6 +10,7 @@ import org.slf4j.Marker;
 import org.slf4j.MarkerFactory;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -26,13 +26,13 @@ public class WebRankUpConfigurer {
 
     private final RankRepository rankRepository;
     private final DefaultRankRepository defaultRankRepository;
-    private final DefaultRankEntityMapper defaultRankEntityMapper;
     private final Ranks ranks;
     private final Levels levels;
     private final Images images;
     private final LevelUpMessages levelUpMessages;
     private final RankUpConfigHandler configHandler;
     private final RankUpConfigMapper configMapper;
+    private final StringSplitter splitter;
 
     public void importWebConfig(WebRankUpConfig webConfig) {
         serializeConfig(webConfig);
@@ -47,17 +47,45 @@ public class WebRankUpConfigurer {
 
     private void saveRanks(WebRankUpConfig webConfig) {
         log.info(LOG_MARKER, START_SAVE_LOG);
-        List<DefaultRankEntity> defaultRankEntities = (List<DefaultRankEntity>) defaultRankRepository.findAll();
-        List<RankEntity> rankEntities = getRankEntitiesFromDefault(defaultRankEntities);
+        List<RankEntity> rankEntities = getRankEntities(webConfig);
         importAllFrom(webConfig, rankEntities);
         save(rankEntities);
         log.info(LOG_MARKER, SUCCESS_SAVE_LOG);
     }
 
-    private List<RankEntity> getRankEntitiesFromDefault(List<DefaultRankEntity> defaultRankEntities) {
-        return defaultRankEntities.stream()
-                .map(defaultRankEntityMapper::toRankEntity)
-                .toList();
+    private List<RankEntity> getRankEntities(WebRankUpConfig webRankUpConfig) {
+        if (webRankUpConfig.getCustomRanks() != null && webRankUpConfig.getCustomLevels() != null) {
+            List<String> levels = splitter.split(webRankUpConfig.getCustomLevels(), ",");
+            List<String> ranks = splitter.split(webRankUpConfig.getCustomRanks(), "\n");
+            checkQuantity(levels, ranks);
+            return createNRankEntities(levels.size());
+        } else if (webRankUpConfig.getCustomRanks() != null) {
+            List<String> ranks = splitter.split(webRankUpConfig.getCustomRanks(), "\n");
+            return createNRankEntities(ranks.size());
+        } else if (webRankUpConfig.getCustomLevels() != null) {
+            List<String> levels = splitter.split(webRankUpConfig.getCustomLevels(), ",");
+            return createNRankEntities(levels.size());
+        } else {
+            List<DefaultRankEntity> defaultRankEntities = (List<DefaultRankEntity>) defaultRankRepository.findAll();
+            return createNRankEntities(defaultRankEntities.size());
+        }
+    }
+
+    private void checkQuantity(List<String> levels, List<String> ranks) {
+        int levelsQuantity = levels.size();
+        int ranksQuantity = ranks.size();
+
+        if (levelsQuantity != ranksQuantity) {
+            throw new IllegalArgumentException();
+        }
+    }
+
+    private List<RankEntity> createNRankEntities(int n) {
+        List<RankEntity> levelsEntities = new ArrayList<>();
+        for (int i = 0; i < n; i++) {
+            levelsEntities.add(new RankEntity());
+        }
+        return levelsEntities;
     }
 
     private void importAllFrom(WebRankUpConfig webConfig, List<RankEntity> rankEntities) {
@@ -82,8 +110,10 @@ public class WebRankUpConfigurer {
     }
 
     private void exportAllTo(WebRankUpConfig webConfig) {
-        webConfig.setCustomRanks(ranks.exportRanks());
-        webConfig.setCustomLevels(levels.exportLevels());
+        webConfig.setCustomRanks(ranks.exportCustomRanks());
+        webConfig.setDefaultRanks(ranks.exportDefaultRanks());
+        webConfig.setCustomLevels(levels.exportCustomLevels());
+        webConfig.setDefaultLevels(levels.exportDefaultLevels());
         webConfig.setAttachedImagesUrl(images.exportImages());
     }
 }

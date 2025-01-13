@@ -8,10 +8,8 @@ import java.util.List;
 public class StringSplitter {
     public List<String> split(String string, String delimiter) {
         throwIfNull(string, delimiter);
-        if (isEmpty(delimiter)) {
-            return List.of(string);
-        }
-        if (string.equals("")) return List.of();
+        if (isEmpty(delimiter)) return List.of(string);
+        if (isEmpty(string)) return List.of();
 
         return splitString(string, delimiter);
     }

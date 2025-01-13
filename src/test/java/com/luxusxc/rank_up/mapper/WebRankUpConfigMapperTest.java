@@ -14,7 +14,7 @@ public class WebRankUpConfigMapperTest {
     @Test
     void testToRankUpConfig() {
         WebRankUpConfig webConfig = new WebRankUpConfig(false, true, "10, 20",
-                false, "HEROLD\nCRUSADER", true,
+                "LEGEND\nANCIENT", false, "HEROLD\nCRUSADER", "30, 40", true,
                 "name: {name}", "");
         RankUpConfig config = mapper.toRankUpConfig(webConfig);
 

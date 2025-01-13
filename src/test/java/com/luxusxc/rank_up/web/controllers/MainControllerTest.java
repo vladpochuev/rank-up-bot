@@ -15,6 +15,8 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
+import java.util.Map;
+
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -64,8 +66,8 @@ public class MainControllerTest {
         assertTrue(Boolean.parseBoolean(isChecked));
 
         Element textBox = document.selectFirst("#ranks_textarea");
-        String text = textBox.text();
-        assertThat(text, equalTo("TEST1, TEST2"));
+        Map<String, String> dataset = textBox.dataset();
+        assertThat(dataset.get("custom-ranks"), equalTo("TEST1, TEST2"));
     }
 
     @Test

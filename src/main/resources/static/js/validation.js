@@ -49,11 +49,6 @@ function validateImages() {
 }
 
 function validateQuantity() {
-    const customRanksCheckbox = document.querySelector("#custom_ranks_checkbox")
-    const customLevelsCheckbox = document.querySelector("#custom_levels_checkbox")
-
-    if (!customRanksCheckbox.checked || !customLevelsCheckbox.checked) return true
-
     const levelsValue = levels.value.trim()
     const ranksValue = ranks.value.trim()
 

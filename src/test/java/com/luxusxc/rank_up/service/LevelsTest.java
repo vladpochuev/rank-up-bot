@@ -1,5 +1,6 @@
 package com.luxusxc.rank_up.service;
 
+import com.luxusxc.rank_up.mapper.DefaultRankEntityMapper;
 import com.luxusxc.rank_up.model.DefaultRankEntity;
 import com.luxusxc.rank_up.model.RankEntity;
 import com.luxusxc.rank_up.model.WebRankUpConfig;
@@ -24,7 +25,7 @@ public class LevelsTest {
     public LevelsTest() {
         repository = mock();
         defaultRepository = mock();
-        this.levels = new Levels(repository, defaultRepository, new StringSplitter(), new StringJoiner());
+        this.levels = new Levels(repository, defaultRepository, new StringSplitter(), new StringJoiner(), DefaultRankEntityMapper.INSTANCE);
     }
 
     @Test
@@ -34,11 +35,11 @@ public class LevelsTest {
         rankEntities.add(new RankEntity(null, 10L, levelUpMessage));
 
         when(repository.findAll()).thenReturn(rankEntities);
-        assertThat(levels.exportLevels(), equalTo("10"));
+        assertThat(levels.exportCustomLevels(), equalTo("10"));
     }
 
     @Test
-    void testExportLevels() {
+    void testExportCustomLevels() {
         List<RankEntity> rankEntities = new ArrayList<>();
         String levelUpMessage = "name: {name}";
         rankEntities.add(new RankEntity(null, 10L, levelUpMessage));
@@ -46,30 +47,30 @@ public class LevelsTest {
         rankEntities.add(new RankEntity(null, 30L, levelUpMessage));
 
         when(repository.findAll()).thenReturn(rankEntities);
-        assertThat(levels.exportLevels(), equalTo("10, 20, 30"));
+        assertThat(levels.exportCustomLevels(), equalTo("10, 20, 30"));
     }
 
     @Test
-    void testExportLevelsEmpty() {
+    void testExportCustomLevelsEmpty() {
         List<RankEntity> rankEntities = new ArrayList<>();
         when(repository.findAll()).thenReturn(rankEntities);
-        assertThat(levels.exportLevels(), equalTo(""));
+        assertThat(levels.exportCustomLevels(), equalTo(""));
     }
 
     @Test
-    void testExportLevelsNull() {
+    void testExportCustomLevelsNull() {
         List<RankEntity> rankEntities = new ArrayList<>();
         rankEntities.add(null);
         when(repository.findAll()).thenReturn(rankEntities);
-        assertThrows(NullPointerException.class, levels::exportLevels);
+        assertThrows(NullPointerException.class, levels::exportCustomLevels);
     }
 
     @Test
-    void testExportLevelsNullField() {
+    void testExportCustomLevelsNullField() {
         List<RankEntity> rankEntities = new ArrayList<>();
         rankEntities.add(new RankEntity(null, null, "name: {name}"));
         when(repository.findAll()).thenReturn(rankEntities);
-        assertThrows(NullPointerException.class, levels::exportLevels);
+        assertThrows(NullPointerException.class, levels::exportCustomLevels);
     }
 
     @Test
@@ -87,7 +88,7 @@ public class LevelsTest {
 
     @Test
     void testImportLevelsDefault() {
-        RankEntity rankEntity =  new RankEntity(null, null, null);
+        RankEntity rankEntity = new RankEntity(null, null, null);
         DefaultRankEntity defaultRankEntity = new DefaultRankEntity(null, 10L);
         when(defaultRepository.findAll()).thenReturn(List.of(defaultRankEntity));
 

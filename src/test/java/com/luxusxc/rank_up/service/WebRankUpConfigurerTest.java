@@ -34,11 +34,11 @@ public class WebRankUpConfigurerTest {
         StringSplitter splitter = new StringSplitter();
         StringJoiner joiner = new StringJoiner();
 
-        Ranks ranks = new Ranks(rankRepository, defaultRankRepository, splitter, joiner);
-        Levels levels = new Levels(rankRepository, defaultRankRepository, splitter, joiner);
+        Ranks ranks = new Ranks(rankRepository, defaultRankRepository, splitter, joiner, DefaultRankEntityMapper.INSTANCE);
+        Levels levels = new Levels(rankRepository, defaultRankRepository, splitter, joiner, DefaultRankEntityMapper.INSTANCE);
         Images images = new Images(imageRepository, splitter, joiner);
         LevelUpMessages messages = new LevelUpMessages(new VariableReplacer());
-        configurer = new WebRankUpConfigurer(rankRepository, defaultRankRepository, DefaultRankEntityMapper.INSTANCE, ranks, levels, images, messages, configHandler, RankUpConfigMapper.INSTANCE);
+        configurer = new WebRankUpConfigurer(rankRepository, defaultRankRepository, ranks, levels, images, messages, configHandler, RankUpConfigMapper.INSTANCE, splitter);
     }
 
     @BeforeEach

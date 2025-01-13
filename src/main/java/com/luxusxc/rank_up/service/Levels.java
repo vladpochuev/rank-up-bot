@@ -1,5 +1,6 @@
 package com.luxusxc.rank_up.service;
 
+import com.luxusxc.rank_up.mapper.DefaultRankEntityMapper;
 import com.luxusxc.rank_up.model.DefaultRankEntity;
 import com.luxusxc.rank_up.model.LogTags;
 import com.luxusxc.rank_up.model.RankEntity;
@@ -20,13 +21,16 @@ import java.util.List;
 public class Levels {
     private static final String FILL_CUSTOM_LOG = "Levels were replaced with custom ones";
     private static final String FILL_DEFAULT_LOG = "Levels were replaced with default ones";
-    private static final String EXPORTED_LOG = "Levels were successfully exported";
+    private static final String CUSTOM_EXPORTED_LOG = "Custom levels were successfully exported";
+    private static final String DEFAULT_EXPORTED_LOG = "Default levels were successfully exported";
     private static final Marker LOG_MARKER = MarkerFactory.getMarker(LogTags.CONFIG);
 
     private final RankRepository repository;
     private final DefaultRankRepository defaultRepository;
     private final StringSplitter stringSplitter;
     private final StringJoiner stringJoiner;
+    private final DefaultRankEntityMapper defaultRankMapper;
+
     private static final String DELIMITER = ", ";
 
     public void fillLevels(WebRankUpConfig webConfig, List<RankEntity> rankEntities) {
@@ -64,10 +68,18 @@ public class Levels {
         return defaultRanks.stream().map(DefaultRankEntity::getExperience).toList();
     }
 
-    public String exportLevels() {
+    public String exportCustomLevels() {
         List<RankEntity> ranks = (List<RankEntity>) repository.findAll();
         List<String> expStrings = getExpFromRanks(ranks);
-        log.info(LOG_MARKER, EXPORTED_LOG);
+        log.info(LOG_MARKER, CUSTOM_EXPORTED_LOG);
+        return stringJoiner.join(expStrings, DELIMITER);
+    }
+
+    public String exportDefaultLevels() {
+        List<DefaultRankEntity> defaultRanks = (List<DefaultRankEntity>) defaultRepository.findAll();
+        List<RankEntity> ranks = defaultRanks.stream().map(defaultRankMapper::toRankEntity).toList();
+        List<String> expStrings = getExpFromRanks(ranks);
+        log.info(LOG_MARKER, DEFAULT_EXPORTED_LOG);
         return stringJoiner.join(expStrings, DELIMITER);
     }
 

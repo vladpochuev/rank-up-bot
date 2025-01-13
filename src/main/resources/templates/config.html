@@ -28,7 +28,7 @@
         <div class="text_block">
             <label class="title" for="levels_textarea">Custom levels</label>
             <p id="levels_error" class="error">Invalid format. Levels must be a sequence of numbers separated by commas</p>
-            <textarea class="levels" id="levels_textarea" th:field="*{customLevels}" th:disabled="${!webConfig.enableCustomLevels}"></textarea>
+            <textarea class="levels" id="levels_textarea" th:field="*{customLevels}" th:text="${webConfig.enableCustomLevels} ? ${webConfig.customLevels} : ${webConfig.defaultLevels}" th:data-custom="${webConfig.customLevels}" th:data-default="${webConfig.defaultLevels}" th:disabled="${!webConfig.enableCustomLevels}"></textarea>
             <div class="tip">Enter numbers separated by commas. Each number is how many XP do you need for the next level.</div>
         </div>
     </div>
@@ -42,7 +42,7 @@
         <div class="text_block">
             <label class="title" for="ranks_textarea">Ranks</label>
             <p id="ranks_error" class="error">Invalid format. Ranks must be a sequence of phrases separated by line breaks</p>
-            <textarea class="ranks" id="ranks_textarea" th:field="*{customRanks}" th:disabled="${!webConfig.enableCustomRanks}"></textarea>
+            <textarea class="ranks" id="ranks_textarea" th:field="*{customRanks}" th:text="${webConfig.enableCustomRanks} ? ${webConfig.customRanks} : ${webConfig.defaultRanks}" th:data-custom="${webConfig.customRanks}" th:data-default="${webConfig.defaultRanks}" th:disabled="${!webConfig.enableCustomRanks}"></textarea>
             <div class="tip">Enter ranks separated by a line breaks. From the lowest rank to the highest one. Each line is a
                 new level, the first line is level 1.
             </div>

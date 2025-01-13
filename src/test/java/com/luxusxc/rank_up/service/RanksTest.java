@@ -1,5 +1,6 @@
 package com.luxusxc.rank_up.service;
 
+import com.luxusxc.rank_up.mapper.DefaultRankEntityMapper;
 import com.luxusxc.rank_up.model.DefaultRankEntity;
 import com.luxusxc.rank_up.model.RankEntity;
 import com.luxusxc.rank_up.model.WebRankUpConfig;
@@ -24,7 +25,7 @@ public class RanksTest {
     public RanksTest() {
         repository = mock();
         defaultRepository = mock();
-        this.ranks = new Ranks(repository, defaultRepository, new StringSplitter(), new StringJoiner());
+        this.ranks = new Ranks(repository, defaultRepository, new StringSplitter(), new StringJoiner(), DefaultRankEntityMapper.INSTANCE);
     }
 
     @Test
@@ -34,11 +35,11 @@ public class RanksTest {
         rankEntities.add(new RankEntity(1, "TEST1", 10L, levelUpMessage));
 
         when(repository.findAll()).thenReturn(rankEntities);
-        assertThat(ranks.exportRanks(), equalTo("TEST1"));
+        assertThat(ranks.exportCustomRanks(), equalTo("TEST1"));
     }
 
     @Test
-    void testExportRanks() {
+    void testExportCustomRanks() {
         List<RankEntity> rankEntities = new ArrayList<>();
         String levelUpMessage = "name: {name}";
         rankEntities.add(new RankEntity(1, "TEST1", 10L, levelUpMessage));
@@ -46,38 +47,38 @@ public class RanksTest {
         rankEntities.add(new RankEntity(3, "TEST3", 30L, levelUpMessage));
 
         when(repository.findAll()).thenReturn(rankEntities);
-        assertThat(ranks.exportRanks(), equalTo("TEST1\nTEST2\nTEST3"));
+        assertThat(ranks.exportCustomRanks(), equalTo("TEST1\nTEST2\nTEST3"));
     }
 
     @Test
-    void testExportRanksEmpty() {
+    void testExportCustomRanksEmpty() {
         List<RankEntity> rankEntities = new ArrayList<>();
         when(repository.findAll()).thenReturn(rankEntities);
-        assertThat(ranks.exportRanks(), equalTo(""));
+        assertThat(ranks.exportCustomRanks(), equalTo(""));
     }
 
     @Test
-    void testExportRanksNull() {
+    void testExportCustomRanksNull() {
         List<RankEntity> rankEntities = new ArrayList<>();
         rankEntities.add(null);
         when(repository.findAll()).thenReturn(rankEntities);
-        assertThrows(NullPointerException.class, ranks::exportRanks);
+        assertThrows(NullPointerException.class, ranks::exportCustomRanks);
     }
 
     @Test
-    void testExportRanksNullRank() {
+    void testExportCustomRanksNullRank() {
         List<RankEntity> rankEntities = new ArrayList<>();
         rankEntities.add(new RankEntity(null, 10L, "name: {name}"));
         when(repository.findAll()).thenReturn(rankEntities);
-        assertThrows(NullPointerException.class, ranks::exportRanks);
+        assertThrows(NullPointerException.class, ranks::exportCustomRanks);
     }
 
     @Test
-    void testExportRanksNullRankName() {
+    void testExportCustomRanksNullRankName() {
         List<RankEntity> rankEntities = new ArrayList<>();
         rankEntities.add(new RankEntity(1, null, 10L, "name: {name}"));
         when(repository.findAll()).thenReturn(rankEntities);
-        assertThrows(NullPointerException.class, ranks::exportRanks);
+        assertThrows(NullPointerException.class, ranks::exportCustomRanks);
     }
 
     @Test
