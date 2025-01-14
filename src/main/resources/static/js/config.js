@@ -2,7 +2,7 @@ function scrollToTop() {
     window.scrollTo({
         top: 0,
         behavior: "smooth"
-    });
+    })
 }
 
 function send() {
@@ -21,8 +21,8 @@ levelsTextArea.addEventListener("input", () => {
     const customRanksCheckbox = document.querySelector("#custom_ranks_checkbox")
 
     if (!customRanksCheckbox.checked) {
-        let levelsNumber = levelsTextArea.value.split(", ").length
-        if (levelsTextArea.value.endsWith(",")) levelsNumber++;
+        let levelsNumber = levelsTextArea.value.split(/\s*,\s*|,/).length
+        if (/(\s*,\s*|,)$/.test(levelsTextArea.value)) levelsNumber--
         if (levelsTextArea.value === "") levelsNumber = 0
 
         ranksTextArea.value = getNValues(ranksTextArea.dataset.default, levelsNumber, "\n")
@@ -34,7 +34,7 @@ ranksTextArea.addEventListener("input", () => {
 
     if (!customLevelsCheckbox.checked) {
         let ranksNumber = ranksTextArea.value.split("\n").length
-        if (ranksTextArea.value.endsWith("\n")) ranksNumber--;
+        if (ranksTextArea.value.endsWith("\n")) ranksNumber--
         if (ranksTextArea.value === "") ranksNumber = 0
 
         levelsTextArea.value = getNValues(levelsTextArea.dataset.default, ranksNumber, ", ")
@@ -60,6 +60,8 @@ for (let checkbox of checkboxes) {
 
         if (checkbox.checked) {
             textArea.value = textArea.dataset.custom
+            levelsTextArea.dispatchEvent(new Event("input", {bubbles: true}))
+            ranksTextArea.dispatchEvent(new Event("input", {bubbles: true}))
         } else {
             textArea.dataset.custom = textArea.value
             textArea.value = textArea.dataset.default
@@ -68,6 +70,11 @@ for (let checkbox of checkboxes) {
                 levelsTextArea.dispatchEvent(new Event("input", {bubbles: true}))
             } else {
                 ranksTextArea.dispatchEvent(new Event("input", {bubbles: true}))
+            }
+
+            if (!document.querySelector("#custom_ranks_checkbox").checked && !document.querySelector("#custom_levels_checkbox").checked) {
+                levelsTextArea.value = levelsTextArea.dataset.default
+                ranksTextArea.value = ranksTextArea.dataset.default
             }
         }
     })

@@ -135,7 +135,7 @@ public class WebRankUpConfigurerTest {
         webConfig.setLevelUpMessage("{newlvl}: {newrank}");
         webConfig.setEnableCustomLevels(true);
         webConfig.setCustomLevels("12, 13, 14");
-        webConfig.setCustomRanks("HERALD, GUARDIAN, CRUSADERS");
+        webConfig.setCustomRanks("HERALD\nGUARDIAN\nCRUSADERS");
         webConfig.setAttachedImagesUrl("");
 
         configurer.importWebConfig(webConfig);

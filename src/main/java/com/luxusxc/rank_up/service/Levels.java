@@ -58,7 +58,9 @@ public class Levels {
     private void fillFromDefaultLevels(List<RankEntity> rankEntities) {
         List<Long> defaultLevels = getDefaultLevels();
         for (int i = 0; i < rankEntities.size(); i++) {
-            rankEntities.get(i).setExperience(defaultLevels.get(i));
+            RankEntity rank = rankEntities.get(i);
+            rank.setLevel(i+1);
+            rank.setExperience(defaultLevels.get(i));
         }
         log.info(LOG_MARKER, FILL_DEFAULT_LOG);
     }

@@ -67,7 +67,7 @@ public class MainControllerTest {
 
         Element textBox = document.selectFirst("#ranks_textarea");
         Map<String, String> dataset = textBox.dataset();
-        assertThat(dataset.get("custom-ranks"), equalTo("TEST1, TEST2"));
+        assertThat(dataset.get("custom"), equalTo("TEST1, TEST2"));
     }
 
     @Test
