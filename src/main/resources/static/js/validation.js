@@ -65,9 +65,35 @@ function validateQuantity() {
     }
 }
 
+function validateDefaultLevelsOverflow() {
+    const customLevelCheckbox = document.querySelector("#custom_levels_checkbox")
+    const overflowError = document.querySelector("#default_levels_overflow_error")
+    if (!customLevelCheckbox.checked && levels.value.length > levels.dataset.default.length) {
+        overflowError.style.display = "block"
+        return false
+    } else {
+        overflowError.style.display = "none"
+        return true
+    }
+}
+
+function validateDefaultRanksOverflow() {
+    const customRanksCheckbox = document.querySelector("#custom_ranks_checkbox")
+    const overflowError = document.querySelector("#default_ranks_overflow_error")
+    if (!customRanksCheckbox.checked && ranks.value.length > ranks.dataset.default.length) {
+        overflowError.style.display = "block"
+        return false
+    } else {
+        overflowError.style.display = "none"
+        return true
+    }
+}
+
 function validateForms() {
     return validateLevels() &
         validateRanks() &
         validateImages() &
-        validateQuantity()
+        validateQuantity() &
+        validateDefaultLevelsOverflow() &
+        validateDefaultRanksOverflow()
 }

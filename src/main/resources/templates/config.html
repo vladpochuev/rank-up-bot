@@ -3,7 +3,8 @@
 <head>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&amp;display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&amp;display=swap"
+          rel="stylesheet">
 
     <meta charset="UTF-8">
     <link rel="stylesheet" th:href="@{/css/config.css}">
@@ -17,33 +18,52 @@
         <span class="check_title">Enable levels &amp; XP</span>
     </div>
 
-    <p id="quantity_error" class="inner_block error">Invalid format. The number of levels must be equal to the number of ranks</p>
+    <p class="inner_block success" th:if="${saved}">Configuration was successfully saved</p>
+    <p id="quantity_error" class="inner_block error">Invalid format. The number of levels must be equal to the number of
+        ranks</p>
+    <p id="default_levels_overflow_error" class="inner_block error">The number of custom ranks exceeds the number of
+        default levels. Remove the extra ranks or make the levels field custom and define it yourself</p>
+    <p id="default_ranks_overflow_error" class="inner_block error">The number of custom levels exceeds the number of
+        default ranks. Remove the extra levels or make the ranks field custom and define it yourself</p>
 
     <div id="levels" class="inner_block">
         <div class="check">
-            <input id="custom_levels_checkbox" class="levels" type="checkbox" th:checked="${webConfig.enableCustomLevels}" th:field="*{enableCustomLevels}">
+            <input id="custom_levels_checkbox" class="levels" type="checkbox"
+                   th:checked="${webConfig.enableCustomLevels}" th:field="*{enableCustomLevels}">
             <span class="check_title">Enable custom levels</span>
         </div>
 
         <div class="text_block">
             <label class="title" for="levels_textarea">Custom levels</label>
-            <p id="levels_error" class="error">Invalid format. Levels must be a sequence of numbers separated by commas</p>
-            <textarea class="levels" id="levels_textarea" th:field="*{customLevels}" th:text="${webConfig.enableCustomLevels} ? ${webConfig.customLevels} : ${webConfig.defaultLevels}" th:data-custom="${webConfig.customLevels}" th:data-default="${webConfig.defaultLevels}" th:disabled="${!webConfig.enableCustomLevels}"></textarea>
-            <div class="tip">Enter numbers separated by commas. Each number is how many XP do you need for the next level.</div>
+            <p id="levels_error" class="error">Invalid format. Levels must be a sequence of numbers separated by
+                commas</p>
+            <textarea class="levels" id="levels_textarea" th:field="*{customLevels}"
+                      th:text="${webConfig.enableCustomLevels} ? ${webConfig.customLevels} : ${webConfig.defaultLevels}"
+                      th:data-custom="${webConfig.customLevels}" th:data-default="${webConfig.defaultLevels}"
+                      th:disabled="${!webConfig.enableCustomLevels}"></textarea>
+            <div class="tip">Enter numbers separated by commas. Each number is how many XP do you need for the next
+                level.
+            </div>
         </div>
     </div>
 
     <div id="ranks" class="inner_block">
         <div class="check">
-            <input id="custom_ranks_checkbox" class="ranks" type="checkbox" th:checked="${webConfig.enableCustomRanks}" th:field="*{enableCustomRanks}">
+            <input id="custom_ranks_checkbox" class="ranks" type="checkbox" th:checked="${webConfig.enableCustomRanks}"
+                   th:field="*{enableCustomRanks}">
             <span class="check_title">Enable custom ranks</span>
         </div>
 
         <div class="text_block">
             <label class="title" for="ranks_textarea">Ranks</label>
-            <p id="ranks_error" class="error">Invalid format. Ranks must be a sequence of phrases separated by line breaks</p>
-            <textarea class="ranks" id="ranks_textarea" th:field="*{customRanks}" th:text="${webConfig.enableCustomRanks} ? ${webConfig.customRanks} : ${webConfig.defaultRanks}" th:data-custom="${webConfig.customRanks}" th:data-default="${webConfig.defaultRanks}" th:disabled="${!webConfig.enableCustomRanks}"></textarea>
-            <div class="tip">Enter ranks separated by a line breaks. From the lowest rank to the highest one. Each line is a
+            <p id="ranks_error" class="error">Invalid format. Ranks must be a sequence of phrases separated by line
+                breaks</p>
+            <textarea class="ranks" id="ranks_textarea" th:field="*{customRanks}"
+                      th:text="${webConfig.enableCustomRanks} ? ${webConfig.customRanks} : ${webConfig.defaultRanks}"
+                      th:data-custom="${webConfig.customRanks}" th:data-default="${webConfig.defaultRanks}"
+                      th:disabled="${!webConfig.enableCustomRanks}"></textarea>
+            <div class="tip">Enter ranks separated by a line breaks. From the lowest rank to the highest one. Each line
+                is a
                 new level, the first line is level 1.
             </div>
         </div>
@@ -51,7 +71,8 @@
 
     <div id="level_up" class="inner_block">
         <div class="check">
-            <input class="announceLvl" type="checkbox" th:checked="${webConfig.announceLevelUp}" th:field="*{announceLevelUp}">
+            <input class="announceLvl" type="checkbox" th:checked="${webConfig.announceLevelUp}"
+                   th:field="*{announceLevelUp}">
             <span class="check_title">Announce level up</span>
         </div>
 
@@ -63,9 +84,11 @@
 
         <div class="text_block">
             <label class="title" for="images_textarea">Attach image(s)</label>
-            <p id="images_error" class="error">Invalid format. Images must be a set of links separated by line breaks</p>
+            <p id="images_error" class="error">Invalid format. Images must be a set of links separated by line
+                breaks</p>
             <textarea id="images_textarea" th:field="*{attachedImagesUrl}"></textarea>
-            <div class="tip">Separate multiple images by a line break. If you have more than one image, selection will be
+            <div class="tip">Separate multiple images by a line break. If you have more than one image, selection will
+                be
                 random.
             </div>
         </div>
