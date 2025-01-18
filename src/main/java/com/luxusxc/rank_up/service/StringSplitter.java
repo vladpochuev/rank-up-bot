@@ -21,7 +21,7 @@ public class StringSplitter {
     }
 
     private boolean isEmpty(String string) {
-        return string.equals("");
+        return string.isEmpty();
     }
 
     private List<String> splitString(String string, String delimiter) {

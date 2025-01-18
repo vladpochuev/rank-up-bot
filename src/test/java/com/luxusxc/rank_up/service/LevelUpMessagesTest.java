@@ -8,6 +8,7 @@ import java.util.List;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class LevelUpMessagesTest {
@@ -44,11 +45,12 @@ public class LevelUpMessagesTest {
     }
 
     @Test
-    void testImportLevelsEmpty() {
+    void testImportMessageEmpty() {
         RankEntity rankEntity = new RankEntity(null, 10L, "{newrank}");
 
         WebRankUpConfig webConfig = new WebRankUpConfig();
         webConfig.setLevelUpMessage("");
-        assertThrows(IllegalArgumentException.class, () -> messages.fillMessage(webConfig, List.of(rankEntity)));
+        messages.fillMessage(webConfig, List.of(rankEntity));
+        assertThat(rankEntity.getLevelUpMessage(), equalTo(""));
     }
 }

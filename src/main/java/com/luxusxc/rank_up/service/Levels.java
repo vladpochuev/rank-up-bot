@@ -31,7 +31,8 @@ public class Levels {
     private final StringJoiner stringJoiner;
     private final DefaultRankEntityMapper defaultRankMapper;
 
-    private static final String DELIMITER = ", ";
+    private static final String IMPORT_DELIMITER = ",";
+    private static final String EXPORT_DELIMITER = ", ";
 
     public void fillLevels(WebRankUpConfig webConfig, List<RankEntity> rankEntities) {
         if (webConfig.isEnableCustomLevels()) {
@@ -50,9 +51,9 @@ public class Levels {
     }
 
     private List<Long> getLevelsFromString(String levels) {
-        List<String> levelsStr = stringSplitter.split(levels, DELIMITER);
+        List<String> levelsStr = stringSplitter.split(levels, IMPORT_DELIMITER);
         if (levelsStr.equals(List.of())) throw new IllegalArgumentException();
-        return levelsStr.stream().mapToLong(Long::parseLong).boxed().toList();
+        return levelsStr.stream().map(String::trim).mapToLong(Long::parseLong).boxed().toList();
     }
 
     private void fillFromDefaultLevels(List<RankEntity> rankEntities) {
@@ -74,7 +75,7 @@ public class Levels {
         List<RankEntity> ranks = (List<RankEntity>) repository.findAll();
         List<String> expStrings = getExpFromRanks(ranks);
         log.info(LOG_MARKER, CUSTOM_EXPORTED_LOG);
-        return stringJoiner.join(expStrings, DELIMITER);
+        return stringJoiner.join(expStrings, EXPORT_DELIMITER);
     }
 
     public String exportDefaultLevels() {
@@ -82,7 +83,7 @@ public class Levels {
         List<RankEntity> ranks = defaultRanks.stream().map(defaultRankMapper::toRankEntity).toList();
         List<String> expStrings = getExpFromRanks(ranks);
         log.info(LOG_MARKER, DEFAULT_EXPORTED_LOG);
-        return stringJoiner.join(expStrings, DELIMITER);
+        return stringJoiner.join(expStrings, EXPORT_DELIMITER);
     }
 
     private List<String> getExpFromRanks(List<RankEntity> ranks) {

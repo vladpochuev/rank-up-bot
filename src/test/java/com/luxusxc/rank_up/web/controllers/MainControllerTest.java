@@ -1,6 +1,8 @@
 package com.luxusxc.rank_up.web.controllers;
 
+import com.luxusxc.rank_up.model.DefaultRankEntity;
 import com.luxusxc.rank_up.model.WebRankUpConfig;
+import com.luxusxc.rank_up.repository.DefaultRankRepository;
 import com.luxusxc.rank_up.service.WebRankUpConfigurer;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -15,6 +17,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
+import java.util.List;
 import java.util.Map;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -30,6 +33,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 public class MainControllerTest {
     @MockBean
     private WebRankUpConfigurer configurer;
+    @MockBean
+    private DefaultRankRepository defaultRankRepository;
     private final MockMvc mockMvc;
 
     public MainControllerTest(WebApplicationContext webApplicationContext) {
@@ -72,13 +77,26 @@ public class MainControllerTest {
 
     @Test
     void testPost() throws Exception {
+        List<DefaultRankEntity> defaultRanks = List.of(
+                new DefaultRankEntity(1, "HERALD", 10L),
+                new DefaultRankEntity(1, "GUARDIAN", 20L));
+        when(defaultRankRepository.findAll()).thenReturn(defaultRanks);
+
         WebRankUpConfig webConfig = new WebRankUpConfig();
         webConfig.setEnableAll(true);
+        webConfig.setEnableCustomLevels(true);
         webConfig.setCustomLevels("12, 23");
+        webConfig.setEnableCustomRanks(false);
+        webConfig.setLevelUpMessage("Congratulations!");
+        webConfig.setAttachedImagesUrl("https://i.imgur.com/ZmcYXQK.jpeg");
 
         mockMvc.perform(post("/")
+                        .param("enableAll", "true")
+                        .param("enableCustomLevels", "true")
                         .param("customLevels", "12, 23")
-                        .param("enableAll", "true"))
+                        .param("enableCustomRanks", "false")
+                        .param("levelUpMessage", "Congratulations!")
+                        .param("attachedImagesUrl", "https://i.imgur.com/ZmcYXQK.jpeg"))
                 .andExpect(status().is3xxRedirection());
 
         ArgumentCaptor<WebRankUpConfig> captor = ArgumentCaptor.forClass(WebRankUpConfig.class);

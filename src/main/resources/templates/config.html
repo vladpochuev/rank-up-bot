@@ -19,6 +19,8 @@
     </div>
 
     <p class="inner_block success" th:if="${saved}">Configuration was successfully saved</p>
+    <p class="inner_block error" style="display: block" th:if="${notsaved}">Error while saving the configuration</p>
+
     <p id="quantity_error" class="inner_block error">Invalid format. The number of levels must be equal to the number of
         ranks</p>
     <p id="default_levels_overflow_error" class="inner_block error">The number of custom ranks exceeds the number of

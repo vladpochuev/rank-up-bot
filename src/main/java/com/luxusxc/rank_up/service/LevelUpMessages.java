@@ -22,13 +22,13 @@ public class LevelUpMessages {
 
     public void fillMessage(WebRankUpConfig webConfig, List<RankEntity> rankEntities) {
         String message = webConfig.getLevelUpMessage();
-        throwIfNullOrEmpty(message);
+        throwIfNull(message);
         saveCustomMessage(rankEntities, message);
         log.info(LOG_MARKER, FILL_LOG);
     }
 
-    private void throwIfNullOrEmpty(String str) {
-        if (str == null || str.equals("")) {
+    private void throwIfNull(String str) {
+        if (str == null) {
             throw new IllegalArgumentException();
         }
     }

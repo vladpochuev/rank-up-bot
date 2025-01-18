@@ -42,10 +42,11 @@ public class Ranks {
     }
 
     private void fillWithCustomRanks(List<RankEntity> rankEntities, String ranks) {
-            List<String> rankNames = stringSplitter.split(ranks, DELIMITER);
+        List<String> rankNames = stringSplitter.split(ranks, DELIMITER);
         if (rankNames.equals(List.of())) throw new IllegalArgumentException();
         for (int i = 0; i < rankEntities.size(); i++) {
-            rankEntities.get(i).setName(rankNames.get(i));
+            String rankName = rankNames.get(i).trim();
+            rankEntities.get(i).setName(rankName);
         }
         log.info(LOG_MARKER, FILL_CUSTOM_LOG);
     }
