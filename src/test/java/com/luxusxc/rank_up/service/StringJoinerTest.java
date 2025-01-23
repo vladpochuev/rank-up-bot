@@ -1,5 +1,6 @@
 package com.luxusxc.rank_up.service;
 
+import com.luxusxc.rank_up.common.service.StringJoiner;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;

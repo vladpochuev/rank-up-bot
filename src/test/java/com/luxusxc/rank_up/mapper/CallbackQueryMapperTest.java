@@ -1,5 +1,6 @@
 package com.luxusxc.rank_up.mapper;
 
+import com.luxusxc.rank_up.telegram.mapper.CallbackQueryMapper;
 import org.junit.jupiter.api.Test;
 import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
 import org.telegram.telegrambots.meta.api.objects.Message;

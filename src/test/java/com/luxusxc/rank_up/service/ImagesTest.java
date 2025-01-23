@@ -1,8 +1,11 @@
 package com.luxusxc.rank_up.service;
 
-import com.luxusxc.rank_up.model.ImageEntity;
-import com.luxusxc.rank_up.model.WebRankUpConfig;
-import com.luxusxc.rank_up.repository.ImageRepository;
+import com.luxusxc.rank_up.common.model.ImageEntity;
+import com.luxusxc.rank_up.web.model.WebConfig;
+import com.luxusxc.rank_up.common.repository.ImageRepository;
+import com.luxusxc.rank_up.common.service.StringJoiner;
+import com.luxusxc.rank_up.common.service.StringSplitter;
+import com.luxusxc.rank_up.web.service.Images;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 
@@ -59,7 +62,7 @@ public class ImagesTest {
 
     @Test
     void testImportImages() {
-        WebRankUpConfig webConfig = new WebRankUpConfig();
+        WebConfig webConfig = new WebConfig();
         webConfig.setAttachedImagesUrl("https://imgur.com/cOQTe7i\nhttps://imgur.com/tgONOc3");
         images.importImages(webConfig);
 
@@ -77,14 +80,14 @@ public class ImagesTest {
 
     @Test
     void testImportImagesNullField() {
-        WebRankUpConfig webConfig = new WebRankUpConfig();
+        WebConfig webConfig = new WebConfig();
         webConfig.setAttachedImagesUrl(null);
         assertThrows(IllegalArgumentException.class, () -> images.importImages(webConfig));
     }
 
     @Test
     void testImportImagesEmpty() {
-        WebRankUpConfig webConfig = new WebRankUpConfig();
+        WebConfig webConfig = new WebConfig();
         webConfig.setAttachedImagesUrl("");
         images.importImages(webConfig);
 

@@ -1,9 +1,11 @@
 package com.luxusxc.rank_up.telegram;
 
-import com.luxusxc.rank_up.config.BotConfig;
-import com.luxusxc.rank_up.model.BotAction;
-import com.luxusxc.rank_up.service.CommandParser;
-import com.luxusxc.rank_up.service.StringSplitter;
+import com.luxusxc.rank_up.telegram.config.BotConfig;
+import com.luxusxc.rank_up.telegram.model.BotAction;
+import com.luxusxc.rank_up.telegram.service.CommandParser;
+import com.luxusxc.rank_up.common.service.StringSplitter;
+import com.luxusxc.rank_up.telegram.service.CommandProcessor;
+import com.luxusxc.rank_up.telegram.service.TelegramBot;
 import org.junit.jupiter.api.Test;
 import org.springframework.stereotype.Service;
 import org.telegram.telegrambots.meta.api.objects.Chat;

@@ -1,11 +1,14 @@
 package com.luxusxc.rank_up.service;
 
-import com.luxusxc.rank_up.mapper.DefaultRankEntityMapper;
-import com.luxusxc.rank_up.model.DefaultRankEntity;
-import com.luxusxc.rank_up.model.RankEntity;
-import com.luxusxc.rank_up.model.WebRankUpConfig;
-import com.luxusxc.rank_up.repository.DefaultRankRepository;
-import com.luxusxc.rank_up.repository.RankRepository;
+import com.luxusxc.rank_up.web.mapper.DefaultRankEntityMapper;
+import com.luxusxc.rank_up.web.model.DefaultRankEntity;
+import com.luxusxc.rank_up.common.model.RankEntity;
+import com.luxusxc.rank_up.web.model.WebConfig;
+import com.luxusxc.rank_up.web.repository.DefaultRankRepository;
+import com.luxusxc.rank_up.common.repository.RankRepository;
+import com.luxusxc.rank_up.common.service.StringJoiner;
+import com.luxusxc.rank_up.common.service.StringSplitter;
+import com.luxusxc.rank_up.web.service.Levels;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
@@ -78,7 +81,7 @@ public class LevelsTest {
         RankEntity rankEntity = new RankEntity(null, 10L, null);
         when(repository.findAll()).thenReturn(List.of(rankEntity));
 
-        WebRankUpConfig webConfig = new WebRankUpConfig();
+        WebConfig webConfig = new WebConfig();
         webConfig.setEnableCustomLevels(true);
         webConfig.setCustomLevels("20");
         levels.fillLevels(webConfig, List.of(rankEntity));
@@ -92,7 +95,7 @@ public class LevelsTest {
         DefaultRankEntity defaultRankEntity = new DefaultRankEntity(null, 10L);
         when(defaultRepository.findAll()).thenReturn(List.of(defaultRankEntity));
 
-        WebRankUpConfig webConfig = new WebRankUpConfig();
+        WebConfig webConfig = new WebConfig();
         webConfig.setEnableCustomLevels(false);
         webConfig.setCustomLevels("20");
         levels.fillLevels(webConfig, List.of(rankEntity));
@@ -104,7 +107,7 @@ public class LevelsTest {
     void testImportLevelsIllegalArgument() {
         RankEntity rankEntity = new RankEntity(null, 10L, null);
 
-        WebRankUpConfig webConfig = new WebRankUpConfig();
+        WebConfig webConfig = new WebConfig();
         webConfig.setEnableCustomLevels(true);
         webConfig.setCustomLevels("test");
         assertThrows(IllegalArgumentException.class, () -> levels.fillLevels(webConfig, List.of(rankEntity)));
@@ -120,7 +123,7 @@ public class LevelsTest {
     void testImportLevelsNullField() {
         RankEntity rankEntity = new RankEntity(null, 10L, null);
 
-        WebRankUpConfig webConfig = new WebRankUpConfig();
+        WebConfig webConfig = new WebConfig();
         webConfig.setCustomLevels(null);
         webConfig.setEnableCustomLevels(true);
         assertThrows(IllegalArgumentException.class, () -> levels.fillLevels(webConfig, List.of(rankEntity)));
@@ -130,7 +133,7 @@ public class LevelsTest {
     void testImportLevelsEmpty() {
         RankEntity rankEntity = new RankEntity(null, 10L, null);
 
-        WebRankUpConfig webConfig = new WebRankUpConfig();
+        WebConfig webConfig = new WebConfig();
         webConfig.setEnableCustomLevels(true);
         webConfig.setCustomLevels("");
         assertThrows(IllegalArgumentException.class, () -> levels.fillLevels(webConfig, List.of(rankEntity)));

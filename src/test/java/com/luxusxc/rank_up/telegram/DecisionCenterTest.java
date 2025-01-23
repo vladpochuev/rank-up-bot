@@ -1,6 +1,7 @@
 package com.luxusxc.rank_up.telegram;
 
-import com.luxusxc.rank_up.config.BotConfig;
+import com.luxusxc.rank_up.telegram.config.BotConfig;
+import com.luxusxc.rank_up.telegram.service.*;
 import org.junit.jupiter.api.Test;
 import org.telegram.telegrambots.meta.api.objects.*;
 import org.telegram.telegrambots.meta.api.objects.chatmember.ChatMemberAdministrator;

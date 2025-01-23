@@ -1,8 +1,9 @@
 package com.luxusxc.rank_up.service;
 
-import com.luxusxc.rank_up.model.ChatUserId;
-import com.luxusxc.rank_up.model.RankEntity;
-import com.luxusxc.rank_up.model.UserEntity;
+import com.luxusxc.rank_up.telegram.model.ChatUserId;
+import com.luxusxc.rank_up.common.model.RankEntity;
+import com.luxusxc.rank_up.telegram.model.UserEntity;
+import com.luxusxc.rank_up.common.service.VariableReplacer;
 import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.MatcherAssert.assertThat;

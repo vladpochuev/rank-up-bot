@@ -1,7 +1,8 @@
 package com.luxusxc.rank_up.mapper;
 
-import com.luxusxc.rank_up.model.ChatUserId;
-import com.luxusxc.rank_up.model.UserEntity;
+import com.luxusxc.rank_up.telegram.mapper.UserMapper;
+import com.luxusxc.rank_up.telegram.model.ChatUserId;
+import com.luxusxc.rank_up.telegram.model.UserEntity;
 import org.junit.jupiter.api.Test;
 import org.telegram.telegrambots.meta.api.objects.User;
 

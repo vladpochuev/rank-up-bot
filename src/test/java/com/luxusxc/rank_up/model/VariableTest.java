@@ -1,6 +1,9 @@
 package com.luxusxc.rank_up.model;
 
-import com.luxusxc.rank_up.service.Variable;
+import com.luxusxc.rank_up.telegram.model.ChatUserId;
+import com.luxusxc.rank_up.common.model.RankEntity;
+import com.luxusxc.rank_up.telegram.model.UserEntity;
+import com.luxusxc.rank_up.common.service.Variable;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 

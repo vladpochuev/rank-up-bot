@@ -1,8 +1,9 @@
 package com.luxusxc.rank_up.telegram;
 
-import com.luxusxc.rank_up.config.BotConfig;
-import com.luxusxc.rank_up.service.CommandParser;
-import com.luxusxc.rank_up.telegram.commands.CommandType;
+import com.luxusxc.rank_up.telegram.config.BotConfig;
+import com.luxusxc.rank_up.telegram.service.CommandParser;
+import com.luxusxc.rank_up.telegram.command.CommandType;
+import com.luxusxc.rank_up.telegram.service.TelegramBot;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
@@ -15,7 +16,6 @@ import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.commands.BotCommand;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
-import java.util.Arrays;
 import java.util.List;
 
 import static org.hamcrest.MatcherAssert.assertThat;

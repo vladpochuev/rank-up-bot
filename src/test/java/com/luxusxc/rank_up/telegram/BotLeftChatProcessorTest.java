@@ -1,9 +1,11 @@
 package com.luxusxc.rank_up.telegram;
 
-import com.luxusxc.rank_up.model.BotAction;
-import com.luxusxc.rank_up.model.ChatEntity;
-import com.luxusxc.rank_up.repository.ChatRepository;
-import com.luxusxc.rank_up.repository.UserRepository;
+import com.luxusxc.rank_up.telegram.model.BotAction;
+import com.luxusxc.rank_up.telegram.model.ChatEntity;
+import com.luxusxc.rank_up.telegram.repository.ChatRepository;
+import com.luxusxc.rank_up.telegram.repository.UserRepository;
+import com.luxusxc.rank_up.telegram.service.BotLeftChatProcessor;
+import com.luxusxc.rank_up.telegram.service.TelegramBot;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.telegram.telegrambots.meta.api.objects.Chat;

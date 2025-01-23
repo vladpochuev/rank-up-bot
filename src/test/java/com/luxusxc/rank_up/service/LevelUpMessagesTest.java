@@ -1,7 +1,9 @@
 package com.luxusxc.rank_up.service;
 
-import com.luxusxc.rank_up.model.RankEntity;
-import com.luxusxc.rank_up.model.WebRankUpConfig;
+import com.luxusxc.rank_up.common.model.RankEntity;
+import com.luxusxc.rank_up.web.model.WebConfig;
+import com.luxusxc.rank_up.common.service.VariableReplacer;
+import com.luxusxc.rank_up.web.service.LevelUpMessages;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
@@ -22,7 +24,7 @@ public class LevelUpMessagesTest {
     void testImportMessage() {
         RankEntity entity = new RankEntity(1, "TEST", null, null);
 
-        WebRankUpConfig webConfig = new WebRankUpConfig();
+        WebConfig webConfig = new WebConfig();
         webConfig.setLevelUpMessage("{newrank}, {newlvl}");
         messages.fillMessage(webConfig, List.of(entity));
 
@@ -39,7 +41,7 @@ public class LevelUpMessagesTest {
     void testImportMessageNullField() {
         RankEntity rankEntity = new RankEntity(null, 10L, "{newrank}");
 
-        WebRankUpConfig webConfig = new WebRankUpConfig();
+        WebConfig webConfig = new WebConfig();
         webConfig.setLevelUpMessage(null);
         assertThrows(IllegalArgumentException.class, () -> messages.fillMessage(webConfig, List.of(rankEntity)));
     }
@@ -48,7 +50,7 @@ public class LevelUpMessagesTest {
     void testImportMessageEmpty() {
         RankEntity rankEntity = new RankEntity(null, 10L, "{newrank}");
 
-        WebRankUpConfig webConfig = new WebRankUpConfig();
+        WebConfig webConfig = new WebConfig();
         webConfig.setLevelUpMessage("");
         messages.fillMessage(webConfig, List.of(rankEntity));
         assertThat(rankEntity.getLevelUpMessage(), equalTo(""));

@@ -1,7 +1,8 @@
 package com.luxusxc.rank_up.mapper;
 
-import com.luxusxc.rank_up.model.DefaultRankEntity;
-import com.luxusxc.rank_up.model.RankEntity;
+import com.luxusxc.rank_up.web.mapper.DefaultRankEntityMapper;
+import com.luxusxc.rank_up.web.model.DefaultRankEntity;
+import com.luxusxc.rank_up.common.model.RankEntity;
 import org.junit.jupiter.api.Test;
 
 import static org.hamcrest.MatcherAssert.assertThat;

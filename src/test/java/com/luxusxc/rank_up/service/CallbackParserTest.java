@@ -1,5 +1,7 @@
 package com.luxusxc.rank_up.service;
 
+import com.luxusxc.rank_up.common.service.StringSplitter;
+import com.luxusxc.rank_up.telegram.service.CallbackParser;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;

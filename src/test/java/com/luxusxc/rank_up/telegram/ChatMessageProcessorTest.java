@@ -1,14 +1,17 @@
 package com.luxusxc.rank_up.telegram;
 
-import com.luxusxc.rank_up.mapper.UserMapper;
-import com.luxusxc.rank_up.model.ChatUserId;
-import com.luxusxc.rank_up.model.RankEntity;
-import com.luxusxc.rank_up.model.RankUpConfig;
-import com.luxusxc.rank_up.model.UserEntity;
-import com.luxusxc.rank_up.repository.RankRepository;
-import com.luxusxc.rank_up.repository.UserRepository;
-import com.luxusxc.rank_up.service.RankUpConfigHandler;
-import com.luxusxc.rank_up.service.VariableReplacer;
+import com.luxusxc.rank_up.telegram.mapper.UserMapper;
+import com.luxusxc.rank_up.telegram.model.ChatUserId;
+import com.luxusxc.rank_up.common.model.Config;
+import com.luxusxc.rank_up.common.model.RankEntity;
+import com.luxusxc.rank_up.telegram.model.UserEntity;
+import com.luxusxc.rank_up.common.repository.RankRepository;
+import com.luxusxc.rank_up.telegram.repository.UserRepository;
+import com.luxusxc.rank_up.common.service.ConfigHandler;
+import com.luxusxc.rank_up.common.service.VariableReplacer;
+import com.luxusxc.rank_up.telegram.service.ChatMessageProcessor;
+import com.luxusxc.rank_up.telegram.service.LevelUpAnnouncer;
+import com.luxusxc.rank_up.telegram.service.TelegramBot;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
@@ -28,7 +31,7 @@ public class ChatMessageProcessorTest {
     private final RankRepository rankRepository;
     private final ChatMessageProcessor chatMessageProcessor;
     private final TelegramBot bot;
-    private final RankUpConfigHandler configHandler;
+    private final ConfigHandler configHandler;
 
     public ChatMessageProcessorTest() {
         userRepository = mock();
@@ -96,7 +99,7 @@ public class ChatMessageProcessorTest {
         message.setChat(new Chat(user.getChatUserId().getChatId(), "supergroup"));
         message.setFrom(new User(user.getChatUserId().getUserId(), "", false));
 
-        when(configHandler.getConfig()).thenReturn(new RankUpConfig());
+        when(configHandler.getConfig()).thenReturn(new Config());
 
         chatMessageProcessor.processMessage(message).execute(bot);
         ArgumentCaptor<UserEntity> captor = ArgumentCaptor.forClass(UserEntity.class);
@@ -119,7 +122,7 @@ public class ChatMessageProcessorTest {
         message.setChat(new Chat(user.getChatUserId().getChatId(), "supergroup"));
         message.setFrom(new User(user.getChatUserId().getUserId(), "", false));
 
-        RankUpConfig config = new RankUpConfig();
+        Config config = new Config();
         config.setAnnounceLevelUp(true);
         when(configHandler.getConfig()).thenReturn(config);
 
@@ -139,7 +142,7 @@ public class ChatMessageProcessorTest {
         message.setChat(new Chat(user.getChatUserId().getChatId(), "supergroup"));
         message.setFrom(new User(user.getChatUserId().getUserId(), "", false));
 
-        when(configHandler.getConfig()).thenReturn(new RankUpConfig());
+        when(configHandler.getConfig()).thenReturn(new Config());
 
         chatMessageProcessor.processMessage(message).execute(bot);
         verify(bot, times(0)).sendMessage(-1L, "test, GUARDIAN");

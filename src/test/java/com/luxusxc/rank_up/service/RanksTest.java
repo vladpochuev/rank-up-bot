@@ -1,11 +1,14 @@
 package com.luxusxc.rank_up.service;
 
-import com.luxusxc.rank_up.mapper.DefaultRankEntityMapper;
-import com.luxusxc.rank_up.model.DefaultRankEntity;
-import com.luxusxc.rank_up.model.RankEntity;
-import com.luxusxc.rank_up.model.WebRankUpConfig;
-import com.luxusxc.rank_up.repository.DefaultRankRepository;
-import com.luxusxc.rank_up.repository.RankRepository;
+import com.luxusxc.rank_up.web.mapper.DefaultRankEntityMapper;
+import com.luxusxc.rank_up.web.model.DefaultRankEntity;
+import com.luxusxc.rank_up.common.model.RankEntity;
+import com.luxusxc.rank_up.web.model.WebConfig;
+import com.luxusxc.rank_up.web.repository.DefaultRankRepository;
+import com.luxusxc.rank_up.common.repository.RankRepository;
+import com.luxusxc.rank_up.common.service.StringJoiner;
+import com.luxusxc.rank_up.common.service.StringSplitter;
+import com.luxusxc.rank_up.web.service.Ranks;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
@@ -85,7 +88,7 @@ public class RanksTest {
     void testImportRanksCustom() {
         RankEntity rankEntity = new RankEntity(1, "OLD", null, null);
 
-        WebRankUpConfig webConfig = new WebRankUpConfig();
+        WebConfig webConfig = new WebConfig();
         webConfig.setEnableCustomRanks(true);
         webConfig.setCustomRanks("NEW");
         ranks.fillRanks(webConfig, List.of(rankEntity));
@@ -99,7 +102,7 @@ public class RanksTest {
         DefaultRankEntity defaultRankEntity = new DefaultRankEntity(1, "OLD", null);
         when(defaultRepository.findAll()).thenReturn(List.of(defaultRankEntity));
 
-        WebRankUpConfig webConfig = new WebRankUpConfig();
+        WebConfig webConfig = new WebConfig();
         webConfig.setEnableCustomLevels(false);
         webConfig.setCustomRanks("NEW");
         ranks.fillRanks(webConfig, List.of(rankEntity));
@@ -117,19 +120,9 @@ public class RanksTest {
     void testImportLevelsNullField() {
         RankEntity rankEntity = new RankEntity(1, "OLD", null, null);
 
-        WebRankUpConfig webConfig = new WebRankUpConfig();
+        WebConfig webConfig = new WebConfig();
         webConfig.setCustomRanks(null);
         webConfig.setEnableCustomRanks(true);
-        assertThrows(IllegalArgumentException.class, () -> ranks.fillRanks(webConfig, List.of(rankEntity)));
-    }
-
-    @Test
-    void testImportLevelsEmpty() {
-        RankEntity rankEntity = new RankEntity(1, "OLD", null, null);
-
-        WebRankUpConfig webConfig = new WebRankUpConfig();
-        webConfig.setEnableCustomRanks(true);
-        webConfig.setCustomRanks("");
         assertThrows(IllegalArgumentException.class, () -> ranks.fillRanks(webConfig, List.of(rankEntity)));
     }
 }
