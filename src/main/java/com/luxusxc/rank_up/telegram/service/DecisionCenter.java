@@ -1,16 +1,24 @@
 package com.luxusxc.rank_up.telegram.service;
 
-import com.luxusxc.rank_up.telegram.config.BotConfig;
-import com.luxusxc.rank_up.telegram.model.BotAction;
+import com.luxusxc.rank_up.common.model.LogTags;
+import com.luxusxc.rank_up.common.service.ConfigHandler;
 import com.luxusxc.rank_up.telegram.command.CommandType;
+import com.luxusxc.rank_up.telegram.model.BotAction;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Marker;
+import org.slf4j.MarkerFactory;
 import org.springframework.stereotype.Service;
 import org.telegram.telegrambots.meta.api.objects.*;
 import org.telegram.telegrambots.meta.api.objects.chatmember.ChatMember;
 
 @Service
+@Slf4j
 @AllArgsConstructor
 public class DecisionCenter {
+    private static final Marker LOG_MARKER = MarkerFactory.getMarker(LogTags.BOT_SERVICE);
+    private static final String LEVEL_UP_DISABLED_LOG = "Message wasn't processed because \"enableAll\" option is disabled";
+
     private final BotJoinChatProcessor botJoinChatProcessor;
     private final BotLeftChatProcessor botLeftChatProcessor;
     private final UserLeftChatProcessor userLeftChatProcessor;
@@ -19,7 +27,8 @@ public class DecisionCenter {
     private final CallbackProcessor callbackProcessor;
 
     private final ChatMemberStatus status;
-    private final BotConfig botConfig;
+    private final ConfigHandler configHandler;
+    private final CommandParser commandParser;
 
     public BotAction processUpdate(Update update) {
         if (update.hasMyChatMember()) {
@@ -59,7 +68,7 @@ public class DecisionCenter {
         } else if (isGroupChat(chat) && isGroupCommand(message)) {
             return commandProcessor.processGroupCommand(message);
         } else if (isGroupChat(chat)) {
-            return chatMessageProcessor.processMessage(message);
+            return processGroupMessage(message);
         }
         return null;
     }
@@ -69,14 +78,22 @@ public class DecisionCenter {
     }
 
     private boolean isGroupCommand(Message message) {
-        String commandBody = message.getText().trim();
+        String command = message.getText().trim();
         for (CommandType groupCommand : CommandType.getGroupCommands()) {
-            String groupCommandBody = groupCommand.body;
-            if (commandBody.equals(groupCommandBody) || commandBody.equals(groupCommandBody + "@" + botConfig.getBotName())) {
+            String commonCommandBody = commandParser.getCommandBody(command);
+            if (commonCommandBody.equals(groupCommand.body)) {
                 return true;
             }
         }
         return false;
+    }
+
+    private BotAction processGroupMessage(Message message) {
+        if (!configHandler.getConfig().isEnableAll()) {
+            log.info(LOG_MARKER, LEVEL_UP_DISABLED_LOG);
+            return null;
+        }
+        return chatMessageProcessor.processMessage(message);
     }
 
     private BotAction processCallback(CallbackQuery callback) {

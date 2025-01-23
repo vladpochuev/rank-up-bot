@@ -1,5 +1,8 @@
 package com.luxusxc.rank_up.telegram;
 
+import com.luxusxc.rank_up.common.model.Config;
+import com.luxusxc.rank_up.common.service.ConfigHandler;
+import com.luxusxc.rank_up.common.service.StringSplitter;
 import com.luxusxc.rank_up.telegram.config.BotConfig;
 import com.luxusxc.rank_up.telegram.service.*;
 import org.junit.jupiter.api.Test;
@@ -9,8 +12,7 @@ import org.telegram.telegrambots.meta.api.objects.chatmember.ChatMemberLeft;
 import org.telegram.telegrambots.meta.api.objects.chatmember.ChatMemberMember;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.*;
 
 public class DecisionCenterTest {
     private final BotJoinChatProcessor botJoinChatProcessor;
@@ -20,6 +22,7 @@ public class DecisionCenterTest {
     private final CommandProcessor commandProcessor;
     private final CallbackProcessor callbackProcessor;
     private final DecisionCenter decisionCenter;
+    private final ConfigHandler configHandler;
 
     public DecisionCenterTest() {
         this.botJoinChatProcessor = mock();
@@ -28,7 +31,10 @@ public class DecisionCenterTest {
         this.chatMessageProcessor = mock();
         this.commandProcessor = mock();
         this.callbackProcessor = mock();
-        this.decisionCenter = new DecisionCenter(botJoinChatProcessor, botLeftChatProcessor, userLeftChatProcessor, chatMessageProcessor, commandProcessor, callbackProcessor, new ChatMemberStatus(), new BotConfig("CustomRankUpBot", "123"));
+        this.configHandler = mock();
+        StringSplitter splitter = new StringSplitter();
+        BotConfig config = new BotConfig("CustomRankUpBot", "123");
+        this.decisionCenter = new DecisionCenter(botJoinChatProcessor, botLeftChatProcessor, userLeftChatProcessor, chatMessageProcessor, commandProcessor, callbackProcessor, new ChatMemberStatus(), configHandler, new CommandParser(splitter, config));
     }
 
     @Test
@@ -75,8 +81,28 @@ public class DecisionCenterTest {
         message.setText("test");
         update.setMessage(message);
 
+        Config config = new Config();
+        config.setEnableAll(true);
+        when(configHandler.getConfig()).thenReturn(config);
+
         decisionCenter.processUpdate(update);
         verify(chatMessageProcessor).processMessage(any());
+    }
+
+    @Test
+    void testProcessUpdateGroupMessageDisabled() {
+        Update update = new Update();
+        Message message = new Message();
+        message.setChat(new Chat(-1L, "supergroup"));
+        message.setText("test");
+        update.setMessage(message);
+
+        Config config = new Config();
+        config.setEnableAll(false);
+        when(configHandler.getConfig()).thenReturn(config);
+
+        decisionCenter.processUpdate(update);
+        verify(chatMessageProcessor, times(0)).processMessage(any());
     }
 
     @Test
