@@ -60,12 +60,10 @@ public class DecisionCenter {
     }
 
     private BotAction processMessage(Message message) {
-        if (!message.hasText()) return null;
-
         Chat chat = message.getChat();
-        if (chat.isUserChat()) {
+        if (message.hasText() && chat.isUserChat()) {
             return commandProcessor.processUserCommand(message);
-        } else if (isGroupChat(chat) && isGroupCommand(message)) {
+        } else if (message.hasText() && isGroupChat(chat) && isGroupCommand(message)) {
             return commandProcessor.processGroupCommand(message);
         } else if (isGroupChat(chat)) {
             return processGroupMessage(message);
