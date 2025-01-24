@@ -37,3 +37,6 @@ src/main/resources/application.yml
 
 ### Files for quick code cases testing ###
 src/main/java/com/luxusxc/rank_up/Test.java
+
+## Deploy scripts ###
+/deploy.sh

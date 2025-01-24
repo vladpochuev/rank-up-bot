@@ -200,7 +200,7 @@
                 </executions>
             </plugin>
         </plugins>
-        <finalName>rank_up</finalName>
+        <finalName>rank-up-bot</finalName>
     </build>
 
 </project>

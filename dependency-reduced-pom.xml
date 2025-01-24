@@ -13,7 +13,7 @@
   <version>0.0.1-SNAPSHOT</version>
   <description>rank_up</description>
   <build>
-    <finalName>rank_up</finalName>
+    <finalName>rank-up-bot</finalName>
     <plugins>
       <plugin>
         <artifactId>maven-surefire-plugin</artifactId>
