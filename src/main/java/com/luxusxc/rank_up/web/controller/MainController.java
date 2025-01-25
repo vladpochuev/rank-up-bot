@@ -31,6 +31,6 @@ public class MainController {
         } else {
             redirectAttr.addFlashAttribute("notsaved", true);
         }
-        return "redirect:/";
+        return "redirect:";
     }
 }

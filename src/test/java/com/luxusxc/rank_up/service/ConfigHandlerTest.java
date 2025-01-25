@@ -19,6 +19,8 @@ public class ConfigHandlerTest {
     @BeforeEach
     void getConfig() {
         configHandler = new ConfigHandler(WebConfigMapper.INSTANCE);
+        configHandler.setConfigPath("src/main/resources/rankUpConfig.ser");
+        configHandler.exportConfig();
     }
 
     @Test

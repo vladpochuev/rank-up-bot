@@ -65,7 +65,7 @@ public class DecisionCenter {
             return commandProcessor.processUserCommand(message);
         } else if (message.hasText() && isGroupChat(chat) && isGroupCommand(message)) {
             return commandProcessor.processGroupCommand(message);
-        } else if (isGroupChat(chat)) {
+        } else if (message.getNewChatMembers().isEmpty() && message.getLeftChatMember() == null && isGroupChat(chat)) {
             return processGroupMessage(message);
         }
         return null;

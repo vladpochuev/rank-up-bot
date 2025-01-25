@@ -4,11 +4,13 @@ import com.luxusxc.rank_up.common.model.Config;
 import com.luxusxc.rank_up.common.model.LogTags;
 import com.luxusxc.rank_up.web.mapper.WebConfigMapper;
 import com.luxusxc.rank_up.web.model.WebConfig;
+import jakarta.annotation.PostConstruct;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Marker;
 import org.slf4j.MarkerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.io.*;
@@ -23,12 +25,18 @@ public class ConfigHandler {
     private static final String EXPORT_LOG_TEMPLATE = "Config was successfully received from path %s";
     private static final Marker LOG_MARKER = MarkerFactory.getMarker(LogTags.CONFIG);
 
-    private WebConfigMapper webConfigMapper;
-    private String configPath = "src/main/resources/rankUpConfig.ser";
+    @Value("${rank-up-config.path}")
+    private String configPath;
     private Config config;
+
+    private WebConfigMapper webConfigMapper;
 
     public ConfigHandler(WebConfigMapper webConfigMapper) {
         this.webConfigMapper = webConfigMapper;
+    }
+
+    @PostConstruct
+    private void init() {
         exportConfig();
     }
 
