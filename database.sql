@@ -46,3 +46,26 @@ create table default_ranks
     experience bigint,
     name       varchar(255)
 );
+
+INSERT INTO default_ranks (level, experience, name)
+VALUES
+    (1, 20, 'Novice'),
+    (2, 50, 'Learner'),
+    (3, 90, 'Explorer'),
+    (4, 140, 'Activist'),
+    (5, 200, 'Adept'),
+    (6, 270, 'Master'),
+    (7, 350, 'Expert'),
+    (8, 440, 'Professional'),
+    (9, 540, 'Veteran'),
+    (10, 650, 'Sage'),
+    (11, 770, 'Elite'),
+    (12, 900, 'Legend'),
+    (13, 1040, 'Guru'),
+    (14, 1190, 'Inspirer'),
+    (15, 1350, 'Patriarch'),
+    (16, 1520, 'Titan'),
+    (17, 1700, 'Overlord'),
+    (18, 1890, 'Ideal'),
+    (19, 2090, 'Mythical Hero'),
+    (20, 2300, 'Immortal');
